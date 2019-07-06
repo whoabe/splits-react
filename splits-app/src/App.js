@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-const ITEMS = [
+const items = [
   {price: 15.09, quantity: 1, name: 'Chic Teri Omu RC'},
   {price: 1.13, quantity: 5, name: 'Green Tea'},
   {price: 17.92, quantity: 1, name: 'Htt Spicy Pasta'},
@@ -9,6 +9,7 @@ const ITEMS = [
   {price: 10.38, quantity: 1, name: 'Kino Cream Pasta'},
   {price: 16.98, quantity: 1, name: 'Sal Cream Pasta'}
 ];
+
 class UserRow extends React.Component {
   render() {
     const item = this.props.item;
@@ -19,14 +20,17 @@ class UserRow extends React.Component {
     //     {item.name}
     //   </span>;
 
-    const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
+    const UserQuantity = item.quantity
+    // UserQuantity = total item quantity - other people's quantity
+    const UserSubtotal = parseFloat((item.price * item.quantity).toFixed(2))
 
     return (
       <tr>
         <td>{item.name}</td>
-        <td>{item.quantity}</td>
+        <td>{UserQuantity}</td>
+        {/* this should be total quanity - sum(other people's quantities) */}
         <td>{item.price}</td>
-        <td>{subtotal}</td>
+        <td>{UserSubtotal}</td>
       </tr>
     );
   }
@@ -36,6 +40,7 @@ class UserRow extends React.Component {
 class UserTable extends React.Component {
   render() {
     const filterText = this.props.filterText;
+     
 
     const rows = [];
     let lastItem = null;
@@ -249,7 +254,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       filterText: '',
-      items: {ITEMS},
+      items: [],
+      people: 0,
     };
 
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
@@ -261,6 +267,21 @@ class App extends React.Component {
     });
   }
 
+  handleAddPersonClick= () => {
+    this.setState({
+      people: this.state.people + 1
+    })
+  }
+
+  componentDidMount() {
+    this.setState ({
+      items:items
+    }
+    )
+  }
+  // if app mounted, then set the state of items to be items
+  // will later need to get the data from an axios get from the flask server
+
   render() {
     return (
       <div>
@@ -269,20 +290,20 @@ class App extends React.Component {
         onFilterTextChange={this.handleFilterTextChange}/>
 
         <ProductTable 
-        items={this.props.items} 
+        items={this.state.items} 
         filterText ={this.state.filterText}/>
 
-        <button>
+        <button onClick={this.handleAddPersonClick}>
           Add Person
         </button>
 
         <PersonTable 
-        items={this.props.items} 
+        items={this.state.items} 
         filterText ={this.state.filterText}
         />
 
         <UserTable 
-        items={this.props.items} 
+        items={this.state.items} 
         filterText ={this.state.filterText}
         />
 
