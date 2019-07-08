@@ -15,10 +15,10 @@ App
     -User Row
 */
 
-const numberStyle = {
-  fontSize: 25,
-  // fontWeight: 'bold',
-}
+// const numberStyle = {
+//   fontSize: 25,
+//   // fontWeight: 'bold',
+// }
 // const panelStyle = {
 //   width: 300,
 //   borderRadius: '25px',
@@ -36,7 +36,6 @@ items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'
 items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
 items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
 
-// instead of using itemId, what if we used index?
 
 let personId = 0
 
@@ -98,23 +97,33 @@ class App extends React.Component {
   //   this.setState({ todoItems: todoItems });
   // }
 
-  // handleAddCount = (personId, itemId) => {
-  //   console.log('Add count - itemId: ${foodId}, personId: $personId}')
+  handleAddCount = (personId, itemId) => {
+    console.log('Add count - itemId: ${foodId}, personId: $personId}')
 
-  //   const persons = {...this.state.persons}
-  //   const personIndex = persons.findIndex(person => person.personId == personId)
+    const persons = [...this.state.persons]
+    // persons = a duplicate object of this.state.persons
+  
+    const personIndex = persons.findIndex(persons => persons.personId === personId)
 
-  //   persons[personIndex] = {...persons[personIndex]}
-  //   const foodIndex = persons[personIndex].foods.findIndex(item => item.itemId == itemId)
+    // find the person's index in persons array
+    // array.findIndex(callback(element[, index[, array]])[, thisArg])
 
-  //   // if (this.state.remainingFood[foodIndex].quantity == 0) { return }
+    persons[personIndex] = {...persons[personIndex]}
+    console.log(persons)
+    console.log(personIndex)
+    console.log(persons[personIndex])
+    const itemIndex = persons[personIndex].items.findIndex(item => item.itemId === itemId)
+    console.log(itemIndex)
 
-  //   persons[personIndex].foods[foodIndex] = {...persons[personIndex].items[itemIndex]}
-  //   persons[personIndex].items[itemIndex].quantity++
+    // if (this.state.remainingFood[itemIndex].quantity == 0) { return }
 
-  //   this.setState({ persons })
-  //   // this.refreshRemainder()
-  // }
+    persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
+
+    persons[personIndex].items[itemIndex].quantity++
+
+    this.setState({ persons })
+    // // this.refreshRemainder()
+  }
 
 
 
@@ -128,6 +137,10 @@ class App extends React.Component {
   // will later need to get the data from an axios get from the flask server
 
   render() {
+
+    // can add const { items, person, etc} = this.state 
+    // and then remove this.state for the things in the return function
+
 
     // var peep = this.state.people.map((pee, personId) => {
     //   return (
@@ -154,6 +167,7 @@ class App extends React.Component {
         filterText ={this.state.filterText}
         /> */}
 
+        {/* creates the PersonPanel for each person */}
         { this.state.persons.map(person => 
             <PersonPanel 
               person={person} 
@@ -329,7 +343,7 @@ class UserTable extends React.Component {
 
 class PersonPanel extends React.Component {
   render() {
-    // const { person } = this.props
+    const { person } = this.props
     // let totalPrice = 0
     // person.items.forEach(function(item){ totalPrice += (item.price*item.quantity) })
 
@@ -343,29 +357,46 @@ class PersonPanel extends React.Component {
       if (item.description !== lastItem) {
         rows.push(
           <ItemRow
-          item={item}
-          key={item.description} />
+            personId={person.personId}
+            item={item}
+            key={item.description} 
+            onAddCount={this.props.onAddCount}
+            onReduceCount={this.props.onReduceCount}
+          />
         );
         lastItem = item.description
       }
     });
 
-    return (
+//   { person.items.map(item => 
+//       <ItemRow 
+//         personId={person.personId} 
+//         item={item} 
+//         onAddCount={this.props.onAddCount}
+//         onReduceCount={this.props.onReduceCount}
+//       />)}
 
+
+    return (
+    <div>
+      <h3>{person.name} ID: {person.personId}</h3>
+      {/* make this editable */}
+
+      <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
       <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows}
-      </tbody>
-    </table>
-    
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows}
+        </tbody>
+      </table>
+    </div>
     
     // <div style={panelStyle}>
     // <div>
@@ -411,13 +442,22 @@ class ItemRow extends React.Component {
 
     return (
       <tr>
+        {/* Description */}
         <td>{item.description}</td>
+
+        {/* Quantity +/- buttons */}
         <td>
-          <button>+</button>
-          <span>{item.quanity}</span>
-          <button>-</button>
+          <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
+
+          <span>{item.quantity}</span>
+
+          <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
         </td>
+
+        {/* price */}
         <td>{item.price}</td>
+
+        {/* subtotal */}
         {/* <td>{subtotal}</td> */}
       </tr>
 
