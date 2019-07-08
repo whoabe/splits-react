@@ -97,8 +97,32 @@ class App extends React.Component {
   //   this.setState({ todoItems: todoItems });
   // }
 
+  refreshRemainder = () => {
+    let remainingItem = new Array(this.state.items.length)
+    // remainingItem is an array of the length of items, in this case, remainingFood = array[6]
+    for (let i = 0; i < remainingItem.length; i++) {
+
+      let count = this.state.items[i].quantity
+
+      for (let j = 0; j < this.state.persons.length; j++) {
+        count -= this.state.persons[j].items[i].quantity
+
+      }
+
+      remainingItem[i] = { 
+        foodId: this.state.items[i].itemId,
+        description: this.state.items[i].description,
+        price: this.state.items[i].price,
+        quantity: count 
+      }
+    }
+
+    this.setState({ remainingItem })
+
+  }
+
   handleAddCount = (personId, itemId) => {
-    console.log('Add count - itemId: ${foodId}, personId: $personId}')
+    console.log(`Add count - itemId: ${itemId}, personId: ${personId}`)
 
     const persons = [...this.state.persons]
     // persons = a duplicate object of this.state.persons
@@ -125,7 +149,7 @@ class App extends React.Component {
 
 
   handleReduceCount = (personId, itemId) => {
-    console.log(`Reduce count - foodId: ${itemId}, personId: ${personId}`)
+    console.log(`Reduce count - itemId: ${itemId}, personId: ${personId}`)
 
     const persons = [...this.state.persons]
     const personIndex = persons.findIndex(person => person.personId === personId)
@@ -158,13 +182,6 @@ class App extends React.Component {
 
     // can add const { items, person, etc} = this.state 
     // and then remove this.state for the things in the return function
-
-
-    // var peep = this.state.people.map((pee, personId) => {
-    //   return (
-    //     React.createElement(PersonTable, { key: personId, peep:peep})
-    //   );
-    // })
 
     return (
       <div>
@@ -259,105 +276,25 @@ class UserTable extends React.Component {
     });
 
     return (
-      <table>
-        <thead>
+      <div>
         <h3>User/You</h3>
-          <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
     );
   }
 }
 // ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
 // ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
-// class PersonRow extends React.Component {
-//   render() {
-//     const item = this.props.item;
-//     // const name = item.stocked ?
-//     // // if item stocked is not true, then color the name red
-//     //   item.description :
-//     //   <span style={{color: 'red'}}>
-//     //     {item.description}
-//     //   </span>;
-
-//     const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
-
-//     return (
-//       <tr>
-//         <td>{item.description}</td>
-//         <td>
-//           <button>
-//             +
-//           </button>
-//           <span style={numberStyle}>{item.quantity}</span>
-//           <button>
-//             -
-//           </button>
-//         </td>
-//         <td>{item.price}</td>
-//         <td>{subtotal}</td>
-//       </tr>
-//     );
-//   }
-// }
-
-
-// class PersonTable extends React.Component {
-//   render() {
-//     const filterText = this.props.filterText;
-    
-//     const rows = [];
-//     let lastItem = null;
-
-//     // const { person } = this.props
-//     // the array: person is passed in as a this.props.person
-//     // let subTotal = 0
-//     // // initialize subTotal
-//     // person.items.forEach(function(item){ subTotal += (item.price*item.quantity) })
-//     // // the subtotal is equal to the sum of each product of price*quantity
-    
-//     this.props.items.forEach((item) => {
-//       if (item.description.indexOf(filterText) === -1) {
-//         return;
-//       }
-
-//       if (item.description !== lastItem) {
-//         rows.push(
-//           <PersonRow
-//           item={item}
-//           key={item.description} />
-//         );
-//         lastItem = item.description
-//       }
-//     });
-
-//     return (
-
-//       // do an array.map for the people in people
-//       // NameArray.map((item, key)
-
-//       <table>
-//         <thead>
-//         {/* <p>ID: {person.personId}</p> */}
-//         {/* <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button> */}
-//           <tr>
-//             <th>Item</th>
-//             <th>Quantity</th>
-//             <th>Price</th>
-//             <th>Subtotal</th>
-//           </tr>
-//         </thead>
-//         <tbody>{rows}</tbody>
-//       </table>
-//     );
-//   }
-// }
 
 class PersonPanel extends React.Component {
   render() {
@@ -386,15 +323,6 @@ class PersonPanel extends React.Component {
       }
     });
 
-//   { person.items.map(item => 
-//       <ItemRow 
-//         personId={person.personId} 
-//         item={item} 
-//         onAddCount={this.props.onAddCount}
-//         onReduceCount={this.props.onReduceCount}
-//       />)}
-
-
     return (
     <div>
       <h3>{person.name} ID: {person.personId}</h3>
@@ -415,41 +343,7 @@ class PersonPanel extends React.Component {
         </tbody>
       </table>
     </div>
-    
-    // <div style={panelStyle}>
-    // <div>
-    //   <p>ID: {person.personId}</p>
-    //   <p>{person.name}</p>
-    //   <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
-    //   { person.items.map(item => 
-    //       <ItemRow 
-    //         personId={person.personId} 
-    //         item={item} 
-    //         onAddCount={this.props.onAddCount}
-    //         onReduceCount={this.props.onReduceCount}
-    //       />)}
-    //   <h5>Total Price: {totalPrice}</h5>
-    // </div>
-    
-// <div>
-//   <p>ID: {person.personId}</p>
-//   <p>{person.name}</p>
-//   <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
-
-
-//   { person.items.map(item => 
-//       <ItemRow 
-//         personId={person.personId} 
-//         item={item} 
-//         onAddCount={this.props.onAddCount}
-//         onReduceCount={this.props.onReduceCount}
-//       />)}
-
-//   <h5>Total Price: {totalPrice}</h5>
-
-// </div>
-    )
-      
+    )      
   }
 }
 
@@ -457,6 +351,7 @@ class ItemRow extends React.Component {
 
   render() {
     const { item, personId } = this.props
+    const itemSubtotal = parseFloat((item.price * item.quantity).toFixed(2))
 
     return (
       <tr>
@@ -476,23 +371,8 @@ class ItemRow extends React.Component {
         <td>{item.price}</td>
 
         {/* subtotal */}
-        {/* <td>{subtotal}</td> */}
+        <td>{itemSubtotal}</td>
       </tr>
-
-
-      // <React.Fragment>
-
-      //   <p>{item.description} - Unit price {item.price}</p>
-
-      //   <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
-
-      //   <span style={numberStyle}>{item.quantity}</span>
-
-      //   <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
-
-      //   <span> Total price </span> <span style={numberStyle}> {item.price * item.quantity}</span>
-
-      // </React.Fragment>
     )
   }
 
@@ -545,12 +425,7 @@ class ProductTable extends React.Component {
         );
         lastItem = item.description
       }
-      // rows.push(
-      //   <ProductRow
-      //     item={item}
-      //     key={item.description} />
-      // );
-      // lastItem = item.description;
+
     });
 
     return ( 
@@ -587,11 +462,6 @@ class SearchBar extends React.Component {
         placeholder="Search..." 
         value = {this.props.filterText}
         onChange = {this.handleFilterTextChange}/>
-        {/* <p>
-          <input type="checkbox" />
-          {' '}
-          Only show items in stock
-        </p> */}
       </form>
     );
   }
