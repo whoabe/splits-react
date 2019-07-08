@@ -88,17 +88,20 @@ class App extends React.Component {
 
   }
 
-// have the delete person in the person's table
-  handleDeletePerson = personId => {
-    const persons = this.state.persons.filter(p => p.personId !== personId)
-    this.setState({ persons: persons })
-    // need to figure out what to splice/filter
+  handleDeletePerson = personId => { 
+
+    var personsCopy = [...this.state.persons]; 
+    var index = personsCopy.findIndex(personsCopy => personsCopy.personId === personId)
+    if (index !== -1) {
+      personsCopy.splice(index, 1);
+      this.setState({persons: personsCopy}, () => {
+        this.refreshRemainder()
+      });
+      // personId--;
+    }
 
   }
-  // removeItem(itemIndex) {
-  //   todoItems.splice(itemIndex, 1);
-  //   this.setState({ todoItems: todoItems });
-  // }
+  
 
   refreshRemainder = () => {
     // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
