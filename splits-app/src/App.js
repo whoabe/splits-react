@@ -39,7 +39,7 @@ items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'
 items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'});
 items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
 items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
-
+items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
 
 let personId = 0
 
@@ -188,6 +188,7 @@ class App extends React.Component {
   }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
+  
 
   handleInput = (valueType, newValue, targetId) => {
     // items = JSON.parse(JSON.stringify(this.state.items))
@@ -251,5 +252,336 @@ class App extends React.Component {
     );
   }
 }
+
+class UserRow extends React.Component {
+  render() {
+    const remainingItem = this.props.remainingItem;
+    // const name = item.stocked ?
+    // // if item stocked is not true, then color the name red
+    //   item.description :
+    //   <span style={{color: 'red'}}>
+    //     {item.description}
+    //   </span>;
+
+    const UserQuantity = remainingItem.quantity
+    // UserQuantity = total item quantity - other people's quantity
+    const UserItemSubtotal = parseFloat((remainingItem.price * remainingItem.quantity).toFixed(2))
+
+    return (
+      <tr>
+        <td>{remainingItem.description}</td>
+        <td>{UserQuantity}</td>
+        {/* this should be total quanity - sum(other people's quantities) */}
+        <td>{remainingItem.price}</td>
+        <td>{UserItemSubtotal}</td>
+      </tr>
+    );
+  }
+}
+
+
+class UserTable extends React.Component {
+  render() {
+
+    const userSubtotal = parseFloat(((this.props.remainingItems.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
+    const userTax = parseFloat((userSubtotal * 0.06).toFixed(2));
+    const userTotal = (userTax + userSubtotal).toFixed(2)
+
+    const filterText = this.props.filterText;
+
+    const rows = [];
+    let lastItem = null;
+    
+    this.props.remainingItems.forEach((remainingItem) => {
+      if (remainingItem.description.indexOf(filterText) === -1) {
+        return;
+      }
+
+      if (remainingItem.description !== lastItem) {
+        rows.push(
+          <UserRow
+          remainingItem={remainingItem}
+          key={remainingItem.description} />
+        );
+        lastItem = remainingItem.description 
+      }
+    });
+
+    return (
+      <div>
+        <h3>User/You</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows}
+            <tr>
+              <td></td>
+              <td></td>
+              {/* this should be total quanity - sum(other people's quantities) */}
+              <td>Subtotal</td>
+              <td>{userSubtotal}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              {/* this should be total quanity - sum(other people's quantities) */}
+              <td>Tax (6%)</td>
+              <td>{userTax}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              {/* this should be total quanity - sum(other people's quantities) */}
+              <td>Rounding</td>
+              <td>WIP</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              {/* this should be total quanity - sum(other people's quantities) */}
+              <td>Total</td>
+              <td>{userTotal}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+}
+// ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
+// ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
+
+class PersonPanel extends React.Component {
+  render() {
+    const { person } = this.props
+    // let totalPrice = 0
+    // person.items.forEach(function(item){ totalPrice += (item.price*item.quantity) })
+
+    const rows = [];
+    let lastItem = null;
+    this.props.person.items.forEach((item) => {
+      // if (item.description.indexOf(filterText) === -1) {
+      //   return;
+      // }
+
+      if (item.description !== lastItem) {
+        rows.push(
+          <ItemRow
+            personId={person.personId}
+            item={item}
+            key={item.description} 
+            onAddCount={this.props.onAddCount}
+            onReduceCount={this.props.onReduceCount}
+          />
+        );
+        lastItem = item.description
+      }
+    });
+
+    return (
+    <div>
+      <h3>{person.name} ID: {person.personId}</h3>
+      {/* make this editable */}
+
+      <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows}
+        </tbody>
+      </table>
+    </div>
+    )      
+  }
+}
+
+class ItemRow extends React.Component {
+
+  render() {
+    const { item, personId } = this.props
+    const itemSubtotal = parseFloat((item.price * item.quantity).toFixed(2))
+
+    return (
+      <tr>
+        {/* Description */}
+        <td>{item.description}</td>
+
+        {/* Quantity +/- buttons */}
+        <td>
+          <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
+
+          <span>{item.quantity}</span>
+
+          <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
+        </td>
+
+        {/* price */}
+        <td>{item.price}</td>
+
+        {/* subtotal */}
+        <td>{itemSubtotal}</td>
+      </tr>
+    )
+  }
+
+}
+// ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
+// ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
+
+
+class ProductRow extends React.Component {
+
+  render() {
+    const item = this.props.item;
+    // const name = item.stocked ?
+    // // if item stocked is not true, then color the name red
+    //   item.description :
+    //   <span style={{color: 'red'}}>
+    //     {item.description}
+    //   </span>;
+
+    const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
+
+    return (
+      <tr>
+        <td>{item.description}</td>
+        <td>{item.quantity}</td>
+        <td>{item.price}</td>
+        <td>{subtotal}</td>
+      </tr>
+    );
+  }
+}
+
+
+class ProductTable extends React.Component {
+
+  round5= (x) => {
+    return Math.ceil(x/5)*5;
+  }
+
+  render() {
+
+    const productSubtotal = parseFloat(((this.props.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
+    const productTax = parseFloat((productSubtotal * 0.06).toFixed(2));
+    const productTotal = parseFloat((productTax + productSubtotal).toFixed(2));
+    const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
+    const productAfterRounding = parseFloat((productTotal + productRounding).toFixed(2))
+
+    const filterText = this.props.filterText;
+
+    const rows = [];
+    let lastItem = null;
+    
+    this.props.items.forEach((item) => {
+      if (item.description.indexOf(filterText) === -1) {
+        return;
+      }
+
+      if (item.description !== lastItem) {
+        rows.push(
+          <ProductRow
+          item={item}
+          key={item.description} />
+        );
+        lastItem = item.description
+      }
+
+    });
+
+    return ( 
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows}
+          <tr>
+            <td></td>
+            <td></td>
+            {/* this should be total quanity - sum(other people's quantities) */}
+            <td>Subtotal</td>
+            <td>{productSubtotal}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            {/* this should be total quanity - sum(other people's quantities) */}
+            <td>Tax (6%)</td>
+            <td>{productTax}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            {/* this should be total quanity - sum(other people's quantities) */}
+            <td>Total</td>
+            <td>{productTotal}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            {/* this should be total quanity - sum(other people's quantities) */}
+            <td>Rounding</td>
+            <td>{productRounding}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            {/* this should be total quanity - sum(other people's quantities) */}
+            <td>Total after Rounding</td>
+            <td>{productAfterRounding}</td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+}
+
+class SearchBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
+  }
+
+  handleFilterTextChange(e) {
+    this.props.onFilterTextChange(e.target.value);
+  }
+
+  render() {
+    return (
+      <form>
+        <input 
+        type="text" 
+        placeholder="Search..." 
+        value = {this.props.filterText}
+        onChange = {this.handleFilterTextChange}/>
+      </form>
+    );
+  }
+}
+
+
+
+
+
 
 export default App;
