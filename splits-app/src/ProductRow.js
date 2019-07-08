@@ -11,7 +11,7 @@ export default class ProductRow extends React.Component {
     }
 
     render() {
-        const item = this.props.item;
+        const {item} = this.props;
         // const name = item.stocked ?
         // // if item stocked is not true, then color the name red
         //   item.description :

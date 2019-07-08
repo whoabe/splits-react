@@ -220,8 +220,9 @@ class App extends React.Component {
         /> */}
 
         {/* creates the PersonPanel for each person */}
-        { this.state.persons.map(person => 
+        { this.state.persons.map((person, index) => 
             <PersonPanel 
+              key = {index}
               person={person} 
               onDeletePerson={this.handleDeletePerson} 
               onAddCount={this.handleAddCount}

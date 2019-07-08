@@ -17,7 +17,7 @@ export default class ProductTable extends React.Component {
                 rows.push(
                     <ProductRow
                         item={item}
-                        key={item.description}
+                        key={item.itemId}
                         handleInput={this.props.handleInput} />
                 );
                 lastItem = item.description
