@@ -7,7 +7,7 @@ export default class ProductRow extends React.Component {
     }
 
     handleChange = (e) => {
-        this.props.handleInput('description', e.target.value, this.props.item.itemId);
+        this.props.handleInput(e.target.name, e.target.value, this.props.item.itemId);
     }
 
     render() {
@@ -23,11 +23,26 @@ export default class ProductRow extends React.Component {
 
         return (
         <tr>
-            <td><input 
-            value={item.description}
-            onChange={this.handleChange}/></td>
-            <td>{item.quantity}</td>
-            <td>{item.price}</td>
+            <td>
+                <input 
+                    name = 'description'
+                    value={item.description}
+                    onChange={this.handleChange}/>
+            </td>
+            <td>
+                <input
+                    name = 'quantity'
+                    size="2rem"
+                    value={item.quantity}
+                    onChange={this.handleChange}/>
+            </td>
+            <td>
+                <input 
+                    name='price'
+                    size="2rem"
+                    value = {item.price}
+                    onChange={this.handleChange}/>
+            </td>
             <td>{subtotal}</td>
         </tr>
         );
