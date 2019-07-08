@@ -21,12 +21,14 @@ export default class UserTable extends React.Component {
                 rows.push(
                     <UserRow
                         handleInput = {this.props.handleInput}
-                        item={remainingItem}
+                        remainingItem={remainingItem}
                         key={remainingItem.itemId} />
                 );
                 lastItem = remainingItem.description
             }
         });
+
+
 
         return (
       <div>

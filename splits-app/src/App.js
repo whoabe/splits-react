@@ -42,6 +42,8 @@ items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'
 items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
 
 let personId = 0
+// itemId will have to be changed after the hardcoded values above are removed.
+let itemId = 8
 
 class App extends React.Component {
   constructor(props) {
@@ -116,7 +118,6 @@ class App extends React.Component {
 
       for (let j = 0; j < this.state.persons.length; j++) {
         count -= this.state.persons[j].items[i].quantity
-
       }
       
       remainingItems[i] = { 
@@ -178,6 +179,20 @@ class App extends React.Component {
     this.refreshRemainder()
   }
 
+  addRow = () => {
+    const newItem = {
+      itemId : itemId++,
+      price: "",
+      quantity: 0,
+      description: ""
+    }
+    const tempItems = [...this.state.items, newItem]
+    const tempRemainder = [...this.state.remainingItems, newItem]
+    this.setState({
+      items: tempItems,
+      remainingItems: tempRemainder})
+  }
+
 
   componentDidMount() {
 
@@ -200,6 +215,9 @@ class App extends React.Component {
       ...item,
       [valueType]: item.itemId === targetId ? newValue : item[valueType]
     }))
+
+
+
     this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
@@ -215,9 +233,10 @@ class App extends React.Component {
         onFilterTextChange={this.handleFilterTextChange}/>
 
         <ProductTable 
-        items={this.state.items} 
-        filterText ={this.state.filterText}
-        handleInput = {this.handleInput}/>
+          items={this.state.items} 
+          filterText ={this.state.filterText}
+          handleInput = {this.handleInput}
+          addRow = {this.addRow}/>
 
         <button onClick={this.handleAddPersonClick}>
           Add Person
