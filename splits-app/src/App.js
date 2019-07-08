@@ -109,11 +109,9 @@ class App extends React.Component {
     // array.findIndex(callback(element[, index[, array]])[, thisArg])
 
     persons[personIndex] = {...persons[personIndex]}
-    console.log(persons)
-    console.log(personIndex)
-    console.log(persons[personIndex])
+
     const itemIndex = persons[personIndex].items.findIndex(item => item.itemId === itemId)
-    console.log(itemIndex)
+
 
     // if (this.state.remainingFood[itemIndex].quantity == 0) { return }
 
@@ -125,6 +123,26 @@ class App extends React.Component {
     // // this.refreshRemainder()
   }
 
+
+  handleReduceCount = (personId, itemId) => {
+    console.log(`Reduce count - foodId: ${itemId}, personId: ${personId}`)
+
+    const persons = [...this.state.persons]
+    const personIndex = persons.findIndex(person => person.personId === personId)
+
+    persons[personIndex] = {...persons[personIndex]}
+
+    const itemIndex = persons[personIndex].items.findIndex(item => item.itemId === itemId)
+    //Cannot read property 'findIndex' of undefined
+
+    if (persons[personIndex].items[itemIndex].quantity === 0) { return }
+
+    persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
+    persons[personIndex].items[itemIndex].quantity--
+
+    this.setState({ persons })
+    // this.refreshRemainder()
+  }
 
 
   // componentDidMount() {
