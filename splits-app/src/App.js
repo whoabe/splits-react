@@ -39,7 +39,7 @@ items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'
 items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'});
 items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
 items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
-
+items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
 
 let personId = 0
 
@@ -188,6 +188,7 @@ class App extends React.Component {
   }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
+  
 
   handleInput = (valueType, newValue, targetId) => {
     // items = JSON.parse(JSON.stringify(this.state.items))
@@ -251,5 +252,10 @@ class App extends React.Component {
     );
   }
 }
+
+
+
+
+
 
 export default App;
