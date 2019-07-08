@@ -199,7 +199,7 @@ class App extends React.Component {
       ...item,
       [valueType]: item.itemId === targetId ? newValue : item[valueType]
     }))
-    this.setState({items : items})
+    this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
   render() {
@@ -238,9 +238,9 @@ class App extends React.Component {
               /> ) }
 
         <UserTable 
-        handleInput = {this.handleInput}
-        remainingItems={this.state.remainingItems} 
-        filterText ={this.state.filterText}
+          handleInput = {this.handleInput}
+          remainingItems={this.state.remainingItems} 
+          filterText ={this.state.filterText}
         />
 
         
