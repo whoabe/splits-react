@@ -5,22 +5,22 @@ export default class UserTable extends React.Component {
     render() {
         const filterText = this.props.filterText;
 
-
         const rows = [];
         let lastItem = null;
 
-        this.props.items.forEach((item) => {
-            if (item.description.indexOf(filterText) === -1) {
+        this.props.remainingItems.forEach((remainingItem) => {
+            if (remainingItem.description.indexOf(filterText) === -1) {
                 return;
             }
 
-            if (item.description !== lastItem) {
+            if (remainingItem.description !== lastItem) {
                 rows.push(
                     <UserRow
-                        item={item}
-                        key={item.description} />
+                        handleInput = {this.props.handleInput}
+                        item={remainingItem}
+                        key={remainingItem.itemId} />
                 );
-                lastItem = item.description
+                lastItem = remainingItem.description
             }
         });
 

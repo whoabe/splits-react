@@ -32,6 +32,7 @@ App
 // }
 
 var items = [];
+// items is a list of item objects
 items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
 items.push({itemId: 2, price: 1.13, quantity: 5, description: 'Green Tea'});
 items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'});
@@ -47,8 +48,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       filterText: '',
-      items: items,
+      items: [...items],
       persons: [],
+      remainingItems: [...items],
+      // set remainingItems to the items list
     };
 
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
@@ -88,22 +91,26 @@ class App extends React.Component {
 
   }
 
-// have the delete person in the person's table
-  handleDeletePerson = personId => {
-    const persons = this.state.persons.filter(p => p.personId !== personId)
-    this.setState({ persons: persons })
-    // need to figure out what to splice/filter
+  handleDeletePerson = personId => { 
+
+    var personsCopy = [...this.state.persons]; 
+    var index = personsCopy.findIndex(personsCopy => personsCopy.personId === personId)
+    if (index !== -1) {
+      personsCopy.splice(index, 1);
+      this.setState({persons: personsCopy}, () => {
+        this.refreshRemainder()
+      });
+      // personId--;
+    }
 
   }
-  // removeItem(itemIndex) {
-  //   todoItems.splice(itemIndex, 1);
-  //   this.setState({ todoItems: todoItems });
-  // }
+  
 
   refreshRemainder = () => {
-    let remainingItem = new Array(this.state.items.length)
-    // remainingItem is an array of the length of items, in this case, remainingFood = array[6]
-    for (let i = 0; i < remainingItem.length; i++) {
+    // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
+    let remainingItems = [...this.state.remainingItems]
+
+    for (let i = 0; i < remainingItems.length; i++) {
 
       let count = this.state.items[i].quantity
 
@@ -111,16 +118,16 @@ class App extends React.Component {
         count -= this.state.persons[j].items[i].quantity
 
       }
-
-      remainingItem[i] = { 
-        foodId: this.state.items[i].itemId,
-        description: this.state.items[i].description, 
+      
+      remainingItems[i] = { 
+        itemId: this.state.items[i].itemId,
+        description: this.state.items[i].description,
         price: this.state.items[i].price,
         quantity: count 
       }
     }
 
-    this.setState({ remainingItem })
+    this.setState({remainingItems})
 
   }
 
@@ -140,14 +147,14 @@ class App extends React.Component {
     const itemIndex = persons[personIndex].items.findIndex(item => item.itemId === itemId)
 
 
-    // if (this.state.remainingFood[itemIndex].quantity == 0) { return }
+    if (this.state.remainingItems[itemIndex].quantity === 0) { return }
 
     persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
 
     persons[personIndex].items[itemIndex].quantity++
 
     this.setState({ persons })
-    // // this.refreshRemainder()
+    this.refreshRemainder()
   }
 
 
@@ -168,16 +175,17 @@ class App extends React.Component {
     persons[personIndex].items[itemIndex].quantity--
 
     this.setState({ persons })
-    // this.refreshRemainder()
+    this.refreshRemainder()
   }
 
 
-  // componentDidMount() {
+  componentDidMount() {
+
   //   this.setState ({
   //     items:items
   //   }
   //   )
-  // }
+  }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
 
@@ -189,7 +197,7 @@ class App extends React.Component {
     // }]
     const items = this.state.items.map(item => ({
       ...item,
-      [valueType]: item.itemId == targetId ? newValue : item[valueType]
+      [valueType]: item.itemId === targetId ? newValue : item[valueType]
     }))
     this.setState({items : items})
   }
@@ -230,7 +238,8 @@ class App extends React.Component {
               /> ) }
 
         <UserTable 
-        items={this.state.items} 
+        handleInput = {this.handleInput}
+        remainingItems={this.state.remainingItems} 
         filterText ={this.state.filterText}
         />
 

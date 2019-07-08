@@ -19,7 +19,7 @@ export default class PersonPanel extends React.Component {
                     <ItemRow
                         personId={person.personId}
                         item={item}
-                        key={item.description}
+                        key={item.itemId}
                         onAddCount={this.props.onAddCount}
                         onReduceCount={this.props.onReduceCount}
                     />

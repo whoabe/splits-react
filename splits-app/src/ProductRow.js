@@ -20,7 +20,7 @@ export default class ProductRow extends React.Component {
         //   </span>;
 
         const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
-        console.log(item)
+
         return (
         <tr>
             <td><input 
