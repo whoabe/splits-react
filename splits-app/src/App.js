@@ -19,6 +19,14 @@ const numberStyle = {
   fontSize: 25,
   // fontWeight: 'bold',
 }
+// const panelStyle = {
+//   width: 300,
+//   borderRadius: '25px',
+//   marginRight: '15px',
+//   border: '2px solid black',
+//   paddingLeft: '15px',
+//   paddingRight: '15px',
+// }
 
 var items = [];
 items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
@@ -141,10 +149,18 @@ class App extends React.Component {
           Add Person
         </button>
 
-        <PersonTable 
+        {/* <PersonTable 
         items={this.state.items} 
         filterText ={this.state.filterText}
-        />
+        /> */}
+
+        { this.state.persons.map(person => 
+            <PersonPanel 
+              person={person} 
+              onDeletePerson={this.handleDeletePerson} 
+              onAddCount={this.handleAddCount}
+              onReduceCount={this.handleReduceCount}
+              /> ) }
 
         <UserTable 
         items={this.state.items} 
@@ -228,60 +244,105 @@ class UserTable extends React.Component {
 }
 // ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
 // ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
-class PersonRow extends React.Component {
-  render() {
-    const item = this.props.item;
-    // const name = item.stocked ?
-    // // if item stocked is not true, then color the name red
-    //   item.description :
-    //   <span style={{color: 'red'}}>
-    //     {item.description}
-    //   </span>;
+// class PersonRow extends React.Component {
+//   render() {
+//     const item = this.props.item;
+//     // const name = item.stocked ?
+//     // // if item stocked is not true, then color the name red
+//     //   item.description :
+//     //   <span style={{color: 'red'}}>
+//     //     {item.description}
+//     //   </span>;
 
-    const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
+//     const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
 
-    return (
-      <tr>
-        <td>{item.description}</td>
-        <td>
-          <button>
-            +
-          </button>
-          <span style={numberStyle}>{item.quantity}</span>
-          <button>
-            -
-          </button>
-        </td>
-        <td>{item.price}</td>
-        <td>{subtotal}</td>
-      </tr>
-    );
-  }
-}
+//     return (
+//       <tr>
+//         <td>{item.description}</td>
+//         <td>
+//           <button>
+//             +
+//           </button>
+//           <span style={numberStyle}>{item.quantity}</span>
+//           <button>
+//             -
+//           </button>
+//         </td>
+//         <td>{item.price}</td>
+//         <td>{subtotal}</td>
+//       </tr>
+//     );
+//   }
+// }
 
 
-class PersonTable extends React.Component {
-  render() {
-    const filterText = this.props.filterText;
+// class PersonTable extends React.Component {
+//   render() {
+//     const filterText = this.props.filterText;
     
+//     const rows = [];
+//     let lastItem = null;
+
+//     // const { person } = this.props
+//     // the array: person is passed in as a this.props.person
+//     // let subTotal = 0
+//     // // initialize subTotal
+//     // person.items.forEach(function(item){ subTotal += (item.price*item.quantity) })
+//     // // the subtotal is equal to the sum of each product of price*quantity
+    
+//     this.props.items.forEach((item) => {
+//       if (item.description.indexOf(filterText) === -1) {
+//         return;
+//       }
+
+//       if (item.description !== lastItem) {
+//         rows.push(
+//           <PersonRow
+//           item={item}
+//           key={item.description} />
+//         );
+//         lastItem = item.description
+//       }
+//     });
+
+//     return (
+
+//       // do an array.map for the people in people
+//       // NameArray.map((item, key)
+
+//       <table>
+//         <thead>
+//         {/* <p>ID: {person.personId}</p> */}
+//         {/* <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button> */}
+//           <tr>
+//             <th>Item</th>
+//             <th>Quantity</th>
+//             <th>Price</th>
+//             <th>Subtotal</th>
+//           </tr>
+//         </thead>
+//         <tbody>{rows}</tbody>
+//       </table>
+//     );
+//   }
+// }
+
+class PersonPanel extends React.Component {
+  render() {
+    // const { person } = this.props
+    // let totalPrice = 0
+    // person.items.forEach(function(item){ totalPrice += (item.price*item.quantity) })
+
     const rows = [];
     let lastItem = null;
-
-    // const { person } = this.props
-    // the array: person is passed in as a this.props.person
-    // let subTotal = 0
-    // // initialize subTotal
-    // person.items.forEach(function(item){ subTotal += (item.price*item.quantity) })
-    // // the subtotal is equal to the sum of each product of price*quantity
-    
-    this.props.items.forEach((item) => {
-      if (item.description.indexOf(filterText) === -1) {
-        return;
-      }
+    this.props.person.items.forEach((item) => {
+      // if (item.description.indexOf(filterText) === -1) {
+      //   return;
+      // }
 
       if (item.description !== lastItem) {
         rows.push(
-          <PersonRow
+          <ItemRow
           item={item}
           key={item.description} />
         );
@@ -291,24 +352,92 @@ class PersonTable extends React.Component {
 
     return (
 
-      // do an array.map for the people in people
-      // NameArray.map((item, key)
-
       <table>
-        <thead>
-        {/* <p>ID: {person.personId}</p> */}
-        {/* <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button> */}
-          <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
-    );
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows}
+      </tbody>
+    </table>
+    
+    
+    // <div style={panelStyle}>
+    // <div>
+    //   <p>ID: {person.personId}</p>
+    //   <p>{person.name}</p>
+    //   <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+    //   { person.items.map(item => 
+    //       <ItemRow 
+    //         personId={person.personId} 
+    //         item={item} 
+    //         onAddCount={this.props.onAddCount}
+    //         onReduceCount={this.props.onReduceCount}
+    //       />)}
+    //   <h5>Total Price: {totalPrice}</h5>
+    // </div>
+    
+// <div>
+//   <p>ID: {person.personId}</p>
+//   <p>{person.name}</p>
+//   <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+
+
+//   { person.items.map(item => 
+//       <ItemRow 
+//         personId={person.personId} 
+//         item={item} 
+//         onAddCount={this.props.onAddCount}
+//         onReduceCount={this.props.onReduceCount}
+//       />)}
+
+//   <h5>Total Price: {totalPrice}</h5>
+
+// </div>
+    )
+      
   }
+}
+
+class ItemRow extends React.Component {
+
+  render() {
+    const { item, personId } = this.props
+
+    return (
+      <tr>
+        <td>{item.description}</td>
+        <td>
+          <button>+</button>
+          <span>{item.quanity}</span>
+          <button>-</button>
+        </td>
+        <td>{item.price}</td>
+        {/* <td>{subtotal}</td> */}
+      </tr>
+
+
+      // <React.Fragment>
+
+      //   <p>{item.description} - Unit price {item.price}</p>
+
+      //   <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
+
+      //   <span style={numberStyle}>{item.quantity}</span>
+
+      //   <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
+
+      //   <span> Total price </span> <span style={numberStyle}> {item.price * item.quantity}</span>
+
+      // </React.Fragment>
+    )
+  }
+
 }
 // ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
 // ------------------------------------ ------------------------------------ ------------------------------------ ------------------------------------
