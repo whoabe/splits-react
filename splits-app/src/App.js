@@ -29,6 +29,7 @@ App
 // }
 
 var items = [];
+// items is a list of item objects
 items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
 items.push({itemId: 2, price: 1.13, quantity: 5, description: 'Green Tea'});
 items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'});
@@ -44,8 +45,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       filterText: '',
-      items: items,
+      items: [...items],
       persons: [],
+      remainingItems: [...items],
+      // set remainingItems to the items list
     };
 
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
@@ -98,9 +101,10 @@ class App extends React.Component {
   // }
 
   refreshRemainder = () => {
-    let remainingItem = new Array(this.state.items.length)
-    // remainingItem is an array of the length of items, in this case, remainingFood = array[6]
-    for (let i = 0; i < remainingItem.length; i++) {
+    // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
+    let remainingItems = [...this.state.remainingItems]
+
+    for (let i = 0; i < remainingItems.length; i++) {
 
       let count = this.state.items[i].quantity
 
@@ -108,16 +112,16 @@ class App extends React.Component {
         count -= this.state.persons[j].items[i].quantity
 
       }
-
-      remainingItem[i] = { 
-        foodId: this.state.items[i].itemId,
+      
+      remainingItems[i] = { 
+        itemId: this.state.items[i].itemId,
         description: this.state.items[i].description,
         price: this.state.items[i].price,
         quantity: count 
       }
     }
 
-    this.setState({ remainingItem })
+    this.setState({remainingItems})
 
   }
 
@@ -137,14 +141,14 @@ class App extends React.Component {
     const itemIndex = persons[personIndex].items.findIndex(item => item.itemId === itemId)
 
 
-    // if (this.state.remainingFood[itemIndex].quantity == 0) { return }
+    if (this.state.remainingItems[itemIndex].quantity === 0) { return }
 
     persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
 
     persons[personIndex].items[itemIndex].quantity++
 
     this.setState({ persons })
-    // // this.refreshRemainder()
+    this.refreshRemainder()
   }
 
 
@@ -165,16 +169,17 @@ class App extends React.Component {
     persons[personIndex].items[itemIndex].quantity--
 
     this.setState({ persons })
-    // this.refreshRemainder()
+    this.refreshRemainder()
   }
 
 
-  // componentDidMount() {
+  componentDidMount() {
+
   //   this.setState ({
   //     items:items
   //   }
   //   )
-  // }
+  }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
 
@@ -212,7 +217,7 @@ class App extends React.Component {
               /> ) }
 
         <UserTable 
-        items={this.state.items} 
+        remainingItems={this.state.remainingItems} 
         filterText ={this.state.filterText}
         />
 
@@ -227,7 +232,7 @@ class App extends React.Component {
 
 class UserRow extends React.Component {
   render() {
-    const item = this.props.item;
+    const remainingItem = this.props.remainingItem;
     // const name = item.stocked ?
     // // if item stocked is not true, then color the name red
     //   item.description :
@@ -235,16 +240,16 @@ class UserRow extends React.Component {
     //     {item.description}
     //   </span>;
 
-    const UserQuantity = item.quantity
+    const UserQuantity = remainingItem.quantity
     // UserQuantity = total item quantity - other people's quantity
-    const UserSubtotal = parseFloat((item.price * item.quantity).toFixed(2))
+    const UserSubtotal = parseFloat((remainingItem.price * remainingItem.quantity).toFixed(2))
 
     return (
       <tr>
-        <td>{item.description}</td>
+        <td>{remainingItem.description}</td>
         <td>{UserQuantity}</td>
         {/* this should be total quanity - sum(other people's quantities) */}
-        <td>{item.price}</td>
+        <td>{remainingItem.price}</td>
         <td>{UserSubtotal}</td>
       </tr>
     );
@@ -254,24 +259,24 @@ class UserRow extends React.Component {
 
 class UserTable extends React.Component {
   render() {
+
     const filterText = this.props.filterText;
-     
 
     const rows = [];
     let lastItem = null;
     
-    this.props.items.forEach((item) => {
-      if (item.description.indexOf(filterText) === -1) {
+    this.props.remainingItems.forEach((remainingItem) => {
+      if (remainingItem.description.indexOf(filterText) === -1) {
         return;
       }
 
-      if (item.description !== lastItem) {
+      if (remainingItem.description !== lastItem) {
         rows.push(
           <UserRow
-          item={item}
-          key={item.description} />
+          remainingItem={remainingItem}
+          key={remainingItem.description} />
         );
-        lastItem = item.description
+        lastItem = remainingItem.description
       }
     });
 
