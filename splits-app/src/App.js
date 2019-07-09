@@ -1,9 +1,11 @@
 import React from 'react';
 import './App.css';
-import UserTable from './UserTable'
-import SearchBar from './SearchBar'
-import ProductTable from './ProductTable'
-import PersonPanel from './PersonPanel'
+import UserTable from './UserTable';
+import SearchBar from './SearchBar';
+import ProductTable from './ProductTable';
+import PersonPanel from './PersonPanel';
+import axios from 'axios';
+import { Col, Row } from 'reactstrap';
 /*
 Structure
 
@@ -31,28 +33,33 @@ App
 //   paddingRight: '15px',
 // }
 
-var items = [];
-// items is a list of item objects
-items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
-items.push({itemId: 2, price: 1.13, quantity: 5, description: 'Green Tea'});
-items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'});
-items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'});
-items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
-items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
-items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
+// var items = [];
+// // items is a list of item objects
+// items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
+// items.push({itemId: 2, price: 1.13, quantity: 5, description: 'Green Tea'});
+// items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'});
+// items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'});
+// items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
+// items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
+// items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
 
 let personId = 0
 // itemId will have to be changed after the hardcoded values above are removed.
-let itemId = 8
+let itemId = 1
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       filterText: '',
-      items: [...items],
+      items: [],
       persons: [],
-      remainingItems: [...items],
+      remainingItems: [],
+      selectedFile: null,
+      imageWidth: 0,
+      imageHeight: 0,
+      displayWidth: 0,
+      displayHeight: 0,
       // set remainingItems to the items list
     };
 
@@ -85,7 +92,6 @@ class App extends React.Component {
         price: this.state.items[index].price
       })
     }
-
     this.setState({
       persons: [...this.state.persons, newPerson]
     //   persons is a list with the previous persons and the new person
@@ -206,11 +212,6 @@ class App extends React.Component {
   
 
   handleInput = (valueType, newValue, targetId) => {
-    // items = JSON.parse(JSON.stringify(this.state.items))
-    // var itemToChange = items.findIndex(p => p.itemId == targetId)
-    // if (valueType === "description"){
-    //   items[itemToChange].description = newValue
-    // }]
     const items = this.state.items.map(item => ({
       ...item,
       [valueType]: item.itemId === targetId ? newValue : item[valueType]
@@ -221,51 +222,114 @@ class App extends React.Component {
     this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
-  render() {
+  onChangeHandler = e => {
+    this.setState({
+      selectedFile: e.target.files[0],
+      loaded: 0,
+    })
+  }
 
+  onClickHandler = () => {
+    const data = new FormData() 
+    data.append('user_file', this.state.selectedFile)
+    console.log(data)
+    axios({
+      method: 'POST',
+      url: 'http://localhost:5000/api/v1/detect/upload',
+      data: data,
+      headers: { 
+        'content-type': 'multipart/form-data',
+      }
+    })
+    .then((response) => {
+      this.setState({imageUrl : response.data.url, imageWidth: parseInt(response.data.width), imageHeight: parseInt(response.data.height), receiptId: response.data.receiptId})
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  imageCoordFinder = (e) => {
+    var xCoordinate = parseInt(e.nativeEvent.offsetX);
+    var yCoordinate = parseInt(e.nativeEvent.offsetY);
+    const {imageWidth, imageHeight, displayHeight, displayWidth} = this.state
+    xCoordinate = parseInt(xCoordinate*imageWidth/displayWidth)
+    yCoordinate = parseInt(yCoordinate*imageHeight/displayHeight)
+    axios({
+      method: 'POST',
+      url: `http://localhost:5000/api/v1/detect/${this.state.receiptId}`,
+      data: `${xCoordinate}, ${yCoordinate}`,
+      headers: { 
+        'content-type': 'text/plain',
+      }
+    })
+    .then((response) => {
+      console.log(response)
+      if (response.data!=='not found'){
+        const newItem = {itemId : itemId++, price: response.data.unit_price, quantity: response.data.quantity, description: response.data.description}
+        this.setState({items:[...this.state.items, newItem]})
+        this.refreshRemainder()
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  }
+
+  onImgLoad = ({target:img}) => {
+    this.setState({displayHeight:img.offsetHeight,
+    displayWidth:img.offsetWidth});
+  }
+
+  render() {
     // can add const { items, person, etc} = this.state 
     // and then remove this.state for the things in the return function
-
     return (
       <div>
-        <SearchBar 
-        filterText = {this.state.filterText}
-        onFilterTextChange={this.handleFilterTextChange}/>
+        <Row>
+          <Col md="6">
+            <div className="form-group files">
+              <label>Upload Your File </label>
+              <input type="file" name="file" onChange={this.onChangeHandler}/>
+              <button type="button" onClick={this.onClickHandler}>Upload</button> 
+            </div>
+            {this.state.imageUrl !== "" ? <img src={this.state.imageUrl} id="pic" onLoad={this.onImgLoad} onClick={this.imageCoordFinder} alt="" style={{width:"100%"}}/> : null}
+          </Col>
+          <Col md="6">
+            <SearchBar 
+            filterText = {this.state.filterText}
+            onFilterTextChange={this.handleFilterTextChange}/>
 
-        <ProductTable 
-          items={this.state.items} 
-          filterText ={this.state.filterText}
-          handleInput = {this.handleInput}
-          addRow = {this.addRow}/>
+            <ProductTable 
+              items={this.state.items} 
+              filterText ={this.state.filterText}
+              handleInput = {this.handleInput}
+              addRow = {this.addRow}/>
 
-        <button onClick={this.handleAddPersonClick}>
-          Add Person
-        </button>
+            <button onClick={this.handleAddPersonClick}>
+              Add Person
+            </button>
 
-        {/* <PersonTable 
-        items={this.state.items} 
-        filterText ={this.state.filterText}
-        /> */}
+            {/* creates the PersonPanel for each person */}
+            { this.state.persons.map((person, index) => 
+                <PersonPanel 
+                  key = {index}
+                  person={person} 
+                  onDeletePerson={this.handleDeletePerson} 
+                  onAddCount={this.handleAddCount}
+                  onReduceCount={this.handleReduceCount}
+                  /> ) }
 
-        {/* creates the PersonPanel for each person */}
-        { this.state.persons.map((person, index) => 
-            <PersonPanel 
-              key = {index}
-              person={person} 
-              onDeletePerson={this.handleDeletePerson} 
-              onAddCount={this.handleAddCount}
-              onReduceCount={this.handleReduceCount}
-              /> ) }
-
-        <UserTable 
-          handleInput = {this.handleInput}
-          remainingItems={this.state.remainingItems} 
-          filterText ={this.state.filterText}
-        />
-
-        
-        {/* passing items to the following components as props */}
-        
+            <UserTable 
+              handleInput = {this.handleInput}
+              remainingItems={this.state.remainingItems} 
+              filterText ={this.state.filterText}
+            />
+          </Col>
+        </Row>
+          {/* passing items to the following components as props */}
+          
 
       </div>
     );
