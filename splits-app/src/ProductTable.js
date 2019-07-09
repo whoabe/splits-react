@@ -6,9 +6,7 @@ export default class ProductTable extends React.Component {
     }
 
     handleChange = (e) => {
-        debugger
         this.props.handleInput(e.target.name, e.target.value, e.target.id);
-
     }
 
     render() {
