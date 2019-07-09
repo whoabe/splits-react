@@ -5,7 +5,8 @@ import SearchBar from './SearchBar';
 import ProductTable from './ProductTable';
 import PersonPanel from './PersonPanel';
 import axios from 'axios';
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Container } from 'reactstrap';
+import loading from './loadingcolorbar.gif';
 /*
 Structure
 
@@ -60,6 +61,7 @@ class App extends React.Component {
       imageHeight: 0,
       displayWidth: 0,
       displayHeight: 0,
+      loaded: 0,
       // set remainingItems to the items list
     };
 
@@ -232,7 +234,8 @@ class App extends React.Component {
   onClickHandler = () => {
     const data = new FormData() 
     data.append('user_file', this.state.selectedFile)
-    console.log(data)
+    //to make loading screen appear lol
+    this.setState({loaded:0.1})
     axios({
       method: 'POST',
       url: 'http://localhost:5000/api/v1/detect/upload',
@@ -242,7 +245,7 @@ class App extends React.Component {
       }
     })
     .then((response) => {
-      this.setState({imageUrl : response.data.url, imageWidth: parseInt(response.data.width), imageHeight: parseInt(response.data.height), receiptId: response.data.receiptId})
+      this.setState({imageUrl : response.data.url, imageWidth: parseInt(response.data.width), imageHeight: parseInt(response.data.height), receiptId: response.data.receiptId, loaded: 1})
     })
     .catch(function (error) {
       console.log(error);
@@ -285,46 +288,67 @@ class App extends React.Component {
   render() {
     // can add const { items, person, etc} = this.state 
     // and then remove this.state for the things in the return function
+    const { items, imageUrl, loaded, filterText, persons, remainingItems } = this.state
+    const { onChangeHandler, onClickHandler, onImgLoad, imageCoordFinder, addRow, handleFilterTextChange, handleInput, handleAddPersonClick, handleDeletePerson, handleAddCount,
+      handleReduceCount } = this
     return (
       <div>
         <Row>
-          <Col md="6">
-            <div className="form-group files">
-              <label>Upload Your File </label>
-              <input type="file" name="file" onChange={this.onChangeHandler}/>
-              <button type="button" onClick={this.onClickHandler}>Upload</button> 
-            </div>
-            {this.state.imageUrl !== "" ? <img src={this.state.imageUrl} id="pic" onLoad={this.onImgLoad} onClick={this.imageCoordFinder} alt="" style={{width:"100%"}}/> : null}
+          <Col md="6" style={{'height': '100vh'}} className="d-flex justify-content-center align-items-center">
+            {
+              !imageUrl && loaded === 0
+            ? 
+              <Container>
+                <div className="form-group files d-flex flex-column justify-context-center">
+                  <label>Upload Your File </label>
+                  <input type="file" name="file" onChange={onChangeHandler}/>
+                  <button type="button" className="btn btn-success justify-self-between" onClick={onClickHandler}>Upload</button> 
+                </div>
+              </Container>
+            :
+              <div>
+                {loaded !== 1
+                ? 
+                  <Container className="d-flex justify-content-center align-items-center"> 
+                    <img src={loading} alt=""/>
+                  </Container>
+                : 
+                  <div style={{overflowY: 'auto'}}>
+                    <img src={imageUrl} id="pic" onLoad={onImgLoad} onClick={imageCoordFinder} alt="" style={{width:"100%"}}/>
+                  </div>
+                }
+              </div>
+            }
           </Col>
           <Col md="6">
             <SearchBar 
-            filterText = {this.state.filterText}
-            onFilterTextChange={this.handleFilterTextChange}/>
+            filterText = {filterText}
+            onFilterTextChange={handleFilterTextChange}/>
 
             <ProductTable 
-              items={this.state.items} 
-              filterText ={this.state.filterText}
-              handleInput = {this.handleInput}
-              addRow = {this.addRow}/>
+              items={items} 
+              filterText ={filterText}
+              handleInput = {handleInput}
+              addRow = {addRow}/>
 
-            <button onClick={this.handleAddPersonClick}>
+            <button onClick={handleAddPersonClick}>
               Add Person
             </button>
 
             {/* creates the PersonPanel for each person */}
-            { this.state.persons.map((person, index) => 
+            { persons.map((person, index) => 
                 <PersonPanel 
                   key = {index}
                   person={person} 
-                  onDeletePerson={this.handleDeletePerson} 
-                  onAddCount={this.handleAddCount}
-                  onReduceCount={this.handleReduceCount}
+                  onDeletePerson={handleDeletePerson} 
+                  onAddCount={handleAddCount}
+                  onReduceCount={handleReduceCount}
                   /> ) }
 
             <UserTable 
-              handleInput = {this.handleInput}
-              remainingItems={this.state.remainingItems} 
-              filterText ={this.state.filterText}
+              handleInput = {handleInput}
+              remainingItems={remainingItems} 
+              filterText ={filterText}
             />
           </Col>
         </Row>
