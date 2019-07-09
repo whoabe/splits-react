@@ -1,9 +1,21 @@
 import React from 'react';
 import './App.css';
-import UserTable from './UserTable'
-import SearchBar from './SearchBar'
-import ProductTable from './ProductTable'
-import PersonPanel from './PersonPanel'
+import UserTable from './UserTable';
+import SearchBar from './SearchBar';
+import ProductTable from './ProductTable';
+import PersonPanel from './PersonPanel';
+import EmailModal from './EmailModal';
+
+// import {
+//   FacebookShareButton,
+//   TwitterShareButton,
+//   TelegramShareButton,
+//   WhatsappShareButton,
+//   EmailShareButton,
+// } from 'react-share';
+// react-share is for sharing url, to be added in if there is time
+// https://github.com/nygardk/react-share
+
 /*
 Structure
 
@@ -12,8 +24,8 @@ App
   -Product Table
     -Product Row
     -*Manual add
-  -Person Table
-    -Person Row
+  -PersonPanel
+    -Item Row
   -User Table
     -User Row
 */
@@ -51,11 +63,48 @@ class App extends React.Component {
       items: [...items],
       persons: [],
       remainingItems: [...items],
+      rounding: 0,
+      emailModal: false,
+      subtotal: 0,
+      data: [],
+      user: [],
       // set remainingItems to the items list
     };
 
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
   }
+  
+  // round5= (x) => {
+  //   return Math.ceil(x/5)*5;
+  //   }
+
+  roundingFunction = () => {
+    let rounding2 = this.state.rounding
+    let subtotal2 = this.state.subtotal
+    let subtotTotal = 0
+
+    for (let i = 0; i < this.state.items.length; i++) {
+      
+      subtotal2 = (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
+      // parseFloat(string) returns an float
+      subtotTotal += subtotal2
+
+    }
+    console.log('subtotal ' + subtotal2)
+    let tax = parseFloat((subtotTotal*0.06).toFixed(2));
+
+    console.log('tax ' + tax)
+    let total = tax + subtotTotal;
+    console.log('total ' + total)
+    let roundedTotal = Math.ceil(total/5)*5;
+  
+    rounding2 = parseFloat((roundedTotal-total).toFixed(2));
+    this.setState({
+      rounding: rounding2, subtotal: subtotal2
+    
+    })
+  }
+  
 
   handleFilterTextChange(filterText) {
     this.setState({
@@ -85,7 +134,8 @@ class App extends React.Component {
     }
 
     this.setState({
-      persons: [...this.state.persons, newPerson]
+      persons: [...this.state.persons, newPerson],
+      data: [...this.state.data, newPerson]
     //   persons is a list with the previous persons and the new person
     })
 
@@ -110,6 +160,8 @@ class App extends React.Component {
     // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
     let remainingItems = [...this.state.remainingItems]
 
+    const user = {...this.state.user}
+
     for (let i = 0; i < remainingItems.length; i++) {
 
       let count = this.state.items[i].quantity
@@ -126,9 +178,15 @@ class App extends React.Component {
         quantity: count 
       }
     }
-
-    this.setState({remainingItems})
-
+    
+    
+    this.setState({remainingItems}, () => {
+      this.round()
+      user.items = [...this.state.remainingItems]
+      this.setState({ user })
+    });
+// want this.state.user.items to be equal to remainingItems
+    
   }
 
   handleAddCount = (personId, itemId) => {
@@ -178,13 +236,14 @@ class App extends React.Component {
     this.refreshRemainder()
   }
 
+  toggleEmailModal = () => {
+    this.setState(prevState => ({
+      emailModal: !prevState.emailModal
+    })); 
+  }
 
-  componentDidMount() {
-
-  //   this.setState ({
-  //     items:items
-  //   }
-  //   )
+  round = () => {
+    this.roundingFunction()
   }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
@@ -203,13 +262,36 @@ class App extends React.Component {
     this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
+  componentDidMount() {
+
+    this.round()
+    const user = {
+      name: 'You/User',
+      userId: 0,
+      items: [...items]
+    }
+    // add user into user state here
+    this.setState({
+      user: user,
+      data: [...this.state.data, user]
+    //   persons is a list with the previous persons and the new person
+    })
+  }
+  componentDidUpdate() {
+    // console.log("data "+JSON.stringify(this.state.data))
+    // console.log("persons "+JSON.stringify(this.state.persons))
+    // console.log("user.items " +JSON.stringify(this.state.user.items))
+   
+  }
+
   render() {
 
     // can add const { items, person, etc} = this.state 
     // and then remove this.state for the things in the return function
 
     return (
-      <div>
+      <>
+        {/* <button onClick={this.round}>Round</button> */}
         <SearchBar 
         filterText = {this.state.filterText}
         onFilterTextChange={this.handleFilterTextChange}/>
@@ -217,7 +299,8 @@ class App extends React.Component {
         <ProductTable 
         items={this.state.items} 
         filterText ={this.state.filterText}
-        handleInput = {this.handleInput}/>
+        handleInput = {this.handleInput}
+        rounding = {this.state.rounding}/>
 
         <button onClick={this.handleAddPersonClick}>
           Add Person
@@ -236,19 +319,26 @@ class App extends React.Component {
               onDeletePerson={this.handleDeletePerson} 
               onAddCount={this.handleAddCount}
               onReduceCount={this.handleReduceCount}
+              rounding={this.state.rounding}
               /> ) }
 
         <UserTable 
           handleInput = {this.handleInput}
           remainingItems={this.state.remainingItems} 
           filterText ={this.state.filterText}
+          rounding={this.state.rounding}
         />
 
         
         {/* passing items to the following components as props */}
         
-
-      </div>
+        <button onClick = {this.toggleEmailModal}>Send Email</button>
+        <EmailModal 
+          emailModal={this.state.emailModal} 
+          toggleEmailModal={this.toggleEmailModal} 
+          data = {this.state.data}
+        />
+      </>
     );
   }
 }

@@ -9,6 +9,10 @@ export default class UserTable extends React.Component {
 
         const filterText = this.props.filterText;
 
+        const rounding = this.props.rounding;
+        // passed from App
+
+        const afterRoundingTotal = parseFloat((parseFloat(rounding.toFixed(2)) + parseFloat(parseFloat(userTotal).toFixed(2))).toFixed(2))
         const rows = [];
         let lastItem = null;
 
@@ -61,14 +65,14 @@ export default class UserTable extends React.Component {
               <td></td>
               {/* this should be total quanity - sum(other people's quantities) */}
               <td>Rounding</td>
-              <td>WIP</td>
+              <td>{rounding}</td>
             </tr>
             <tr>
               <td></td>
               <td></td>
               {/* this should be total quanity - sum(other people's quantities) */}
-              <td>Total</td>
-              <td>{userTotal}</td>
+              <td>Total after Rounding</td>
+              <td>{afterRoundingTotal}</td>
             </tr>
           </tbody>
         </table>
