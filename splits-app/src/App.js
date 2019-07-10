@@ -81,32 +81,32 @@ class App extends React.Component {
   //   return Math.ceil(x/5)*5;
   //   }
 
-  // roundingFunction = () => {
-  //   let rounding2 = this.state.rounding
-  //   let subtotal2 = this.state.subtotal
-  //   let subtotTotal = 0
+  roundingFunction = () => {
+    let rounding2 = this.state.rounding
+    let subtotal2 = this.state.subtotal
+    let subtotTotal = 0
 
-  //   for (let i = 0; i < this.state.items.length; i++) {
+    for (let i = 0; i < this.state.items.length; i++) {
       
-  //     subtotal2 = (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
-  //     // parseFloat(string) returns an float
-  //     subtotTotal += subtotal2
+      subtotal2 = (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
+      // parseFloat(string) returns an float
+      subtotTotal += subtotal2
 
-  //   }
+    }
   //   // console.log('subtotal ' + subtotal2)
-  //   let tax = parseFloat((subtotTotal*0.06).toFixed(2));
+    let tax = parseFloat((subtotTotal*0.06).toFixed(2));
 
   //   // console.log('tax ' + tax)
-  //   let total = tax + subtotTotal;
+    let total = tax + subtotTotal;
   //   // console.log('total ' + total)
-  //   let roundedTotal = Math.ceil(total/5)*5;
+    let roundedTotal = Math.ceil(total/5)*5;
   
-  //   rounding2 = parseFloat((roundedTotal-total).toFixed(2));
-  //   this.setState({
-  //     rounding: rounding2, subtotal: subtotal2
+    rounding2 = parseFloat((roundedTotal-total).toFixed(2));
+    this.setState({
+      rounding: rounding2, subtotal: subtotal2
     
-  //   })
-  // }
+    })
+  }
   
 
   handleFilterTextChange(filterText) {
@@ -199,7 +199,7 @@ class App extends React.Component {
     
     
     this.setState({remainingItems}, () => {
-      // this.round()
+      this.round()
       user.items = [...this.state.remainingItems]
       this.setState({ user })
     });
@@ -267,6 +267,7 @@ class App extends React.Component {
 
     this.setState({ persons }, () => this.subtotalFunction(personId))
     this.refreshRemainder()
+    this.round()
   }
 
 
@@ -288,6 +289,7 @@ class App extends React.Component {
 
     this.setState({ persons }, () => this.subtotalFunction(personId))
     this.refreshRemainder()
+    // this.round()
   }
 
   addRow = () => {
@@ -306,9 +308,9 @@ class App extends React.Component {
 
 
 
-  // round = () => {
-  //   this.roundingFunction()
-  // }
+  round = () => {
+    this.roundingFunction()
+  }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
   
