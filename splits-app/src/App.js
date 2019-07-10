@@ -258,7 +258,7 @@ class App extends React.Component {
 
     const itemIndex = persons[personIndex].items.findIndex(item => item.itemId === itemId)
 
-
+    
     if (this.state.remainingItems[itemIndex].quantity === 0) { return }
 
     persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
@@ -325,8 +325,10 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-
+    
+    
     // this.round()
+    
     let user = {
       name: 'You/User',
       userId: 0,
@@ -335,7 +337,7 @@ class App extends React.Component {
     // add user into user state here
     this.setState({
       user: user,
-      data: [...this.state.data, user]
+      data: [...this.state.data, user],
     //   persons is a list with the previous persons and the new person
     })
   }
@@ -395,7 +397,7 @@ class App extends React.Component {
       if (response.data!=='not found'){
         const newItem = {itemId : itemId++, price: response.data.unit_price, quantity: response.data.quantity, description: response.data.description}
         this.setState({items:[...this.state.items, newItem]})
-        this.refreshRemainder()
+        this.setState({remainingItems:[...this.state.remainingItems, newItem]})
       }
     })
     .catch(function (error) {
