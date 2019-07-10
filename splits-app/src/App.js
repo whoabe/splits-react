@@ -4,18 +4,9 @@ import UserTable from './UserTable';
 import SearchBar from './SearchBar';
 import ProductTable from './ProductTable';
 import PersonPanel from './PersonPanel';
-import EmailModal from './EmailModal';
-
-// import {
-//   FacebookShareButton,
-//   TwitterShareButton,
-//   TelegramShareButton,
-//   WhatsappShareButton,
-//   EmailShareButton,
-// } from 'react-share';
-// react-share is for sharing url, to be added in if there is time
-// https://github.com/nygardk/react-share
-
+import axios from 'axios';
+import { Col, Row, Container } from 'reactstrap';
+import loading from './loadingcolorbar.gif';
 /*
 Structure
 
@@ -43,24 +34,26 @@ App
 //   paddingRight: '15px',
 // }
 
-var items = [];
-// items is a list of item objects
-items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
-items.push({itemId: 2, price: 1.13, quantity: 5, description: 'Green Tea'});
-items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'});
-items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'});
-items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
-items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
-items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
+// var items = [];
+// // items is a list of item objects
+// items.push({itemId: 1, price: 15.09, quantity: 1, description: 'Chic Teri Omu RC'});
+// items.push({itemId: 2, price: 1.13, quantity: 5, description: 'Green Tea'});
+// items.push({itemId: 3, price: 17.92, quantity: 1, description: 'Htt Spicy Pasta'});
+// items.push({itemId: 4, price: 16.04, quantity: 1, description: 'Sirloin S Pasta'});
+// items.push({itemId: 5, price: 10.38, quantity: 1, description: 'Kino Cream Pasta'});
+// items.push({itemId: 6, price: 16.98, quantity: 1, description: 'Sal Cream Pasta'});
+// items.push({itemId: 7, price: 2.83, quantity: 1, description: 'SD-Cream Soup'});
 
 let personId = 0
+// itemId will have to be changed after the hardcoded values above are removed.
+let itemId = 1
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       filterText: '',
-      items: [...items],
+      items: [],
       persons: [],
       remainingItems: [...items],
       rounding: 0,
@@ -71,6 +64,12 @@ class App extends React.Component {
       subtotal: 0,
       tax: 0,
       total: 0,
+      selectedFile: null,
+      imageWidth: 0,
+      imageHeight: 0,
+      displayWidth: 0,
+      displayHeight: 0,
+      loaded: 0,
       // set remainingItems to the items list
     };
 
@@ -138,7 +137,6 @@ class App extends React.Component {
         price: this.state.items[index].price
       })
     }
-
     this.setState({
       persons: [...this.state.persons, newPerson],
       data: [...this.state.data, newPerson]
@@ -188,7 +186,6 @@ class App extends React.Component {
 
       for (let j = 0; j < this.state.persons.length; j++) {
         count -= this.state.persons[j].items[i].quantity
-
       }
       
       remainingItems[i] = { 
@@ -292,6 +289,20 @@ class App extends React.Component {
     this.refreshRemainder()
   }
 
+  addRow = () => {
+    const newItem = {
+      itemId : itemId++,
+      price: "",
+      quantity: 0,
+      description: ""
+    }
+    const tempItems = [...this.state.items, newItem]
+    const tempRemainder = [...this.state.remainingItems, newItem]
+    this.setState({
+      items: tempItems,
+      remainingItems: tempRemainder})
+  }
+
 
 
   // round = () => {
@@ -302,15 +313,13 @@ class App extends React.Component {
   
 
   handleInput = (valueType, newValue, targetId) => {
-    // items = JSON.parse(JSON.stringify(this.state.items))
-    // var itemToChange = items.findIndex(p => p.itemId == targetId)
-    // if (valueType === "description"){
-    //   items[itemToChange].description = newValue
-    // }]
     const items = this.state.items.map(item => ({
       ...item,
       [valueType]: item.itemId === targetId ? newValue : item[valueType]
     }))
+
+
+
     this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
@@ -338,62 +347,142 @@ class App extends React.Component {
   }
 
   render() {
+  onChangeHandler = e => {
+    this.setState({
+      selectedFile: e.target.files[0],
+      loaded: 0,
+    })
+  }
 
+  onClickHandler = () => {
+    const data = new FormData() 
+    data.append('user_file', this.state.selectedFile)
+    //to make loading screen appear lol
+    this.setState({loaded:0.1})
+    axios({
+      method: 'POST',
+      url: 'http://localhost:5000/api/v1/detect/upload',
+      data: data,
+      headers: { 
+        'content-type': 'multipart/form-data',
+      }
+    })
+    .then((response) => {
+      this.setState({imageUrl : response.data.url, imageWidth: parseInt(response.data.width), imageHeight: parseInt(response.data.height), receiptId: response.data.receiptId, loaded: 1})
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  imageCoordFinder = (e) => {
+    var xCoordinate = parseInt(e.nativeEvent.offsetX);
+    var yCoordinate = parseInt(e.nativeEvent.offsetY);
+    const {imageWidth, imageHeight, displayHeight, displayWidth} = this.state
+    xCoordinate = parseInt(xCoordinate*imageWidth/displayWidth)
+    yCoordinate = parseInt(yCoordinate*imageHeight/displayHeight)
+    axios({
+      method: 'POST',
+      url: `http://localhost:5000/api/v1/detect/${this.state.receiptId}`,
+      data: `${xCoordinate}, ${yCoordinate}`,
+      headers: { 
+        'content-type': 'text/plain',
+      }
+    })
+    .then((response) => {
+      console.log(response)
+      if (response.data!=='not found'){
+        const newItem = {itemId : itemId++, price: response.data.unit_price, quantity: response.data.quantity, description: response.data.description}
+        this.setState({items:[...this.state.items, newItem]})
+        this.refreshRemainder()
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  }
+
+  onImgLoad = ({target:img}) => {
+    this.setState({displayHeight:img.offsetHeight,
+    displayWidth:img.offsetWidth});
+  }
+
+  render() {
     // can add const { items, person, etc} = this.state 
     // and then remove this.state for the things in the return function
-
+    const { items, imageUrl, loaded, filterText, persons, remainingItems } = this.state
+    const { onChangeHandler, onClickHandler, onImgLoad, imageCoordFinder, addRow, handleFilterTextChange, handleInput, handleAddPersonClick, handleDeletePerson, handleAddCount,
+      handleReduceCount } = this
     return (
-      <>
-        {/* <button onClick={this.round}>Round</button> */}
-        <SearchBar 
-        filterText = {this.state.filterText}
-        onFilterTextChange={this.handleFilterTextChange}/>
+      <div>
+        <Row>
+          <Col md="6" style={{'height': '100vh'}} className="d-flex justify-content-center align-items-center">
+            {
+              !imageUrl && loaded === 0
+            ? 
+              <Container>
+                <div className="form-group files d-flex flex-column justify-context-center">
+                  <label>Upload Your File </label>
+                  <input type="file" name="file" onChange={onChangeHandler}/>
+                  <button type="button" className="btn btn-success justify-self-between" onClick={onClickHandler}>Upload</button> 
+                </div>
+              </Container>
+            :
+              <div>
+                {loaded !== 1
+                ? 
+                  <Container className="d-flex justify-content-center align-items-center"> 
+                    <img src={loading} alt=""/>
+                  </Container>
+                : 
+                  <div style={{overflowY: 'auto'}}>
+                    <img src={imageUrl} id="pic" onLoad={onImgLoad} onClick={imageCoordFinder} alt="" style={{width:"100%"}}/>
+                  </div>
+                }
+              </div>
+            }
+          </Col>
+          <Col md="6">
+            <SearchBar 
+            filterText = {filterText}
+            onFilterTextChange={handleFilterTextChange}/>
 
-        <ProductTable 
-        items={this.state.items} 
-        filterText ={this.state.filterText}
-        handleInput = {this.handleInput}
-        rounding = {this.state.rounding}/>
+            <ProductTable 
+              items={items} 
+              filterText ={filterText}
+              handleInput = {handleInput}
+              addRow = {addRow}/>
 
-        <button onClick={this.handleAddPersonClick}>
-          Add Person
-        </button>
+            <button onClick={handleAddPersonClick}>
+              Add Person
+            </button>
 
-        {/* <PersonTable 
-        items={this.state.items} 
-        filterText ={this.state.filterText}
-        /> */}
+            {/* creates the PersonPanel for each person */}
+            { persons.map((person, index) => 
+                <PersonPanel 
+                  key = {index}
+                  person={person} 
+                  onDeletePerson={handleDeletePerson} 
+                  onAddCount={handleAddCount}
+                  onReduceCount={handleReduceCount}
+                  /> ) }
 
-        {/* creates the PersonPanel for each person */}
-        { this.state.persons.map((person, index) => 
-            <PersonPanel 
-              key = {index}
-              person={person} 
-              onDeletePerson={this.handleDeletePerson} 
-              onSendPersonEmail={this.handleSendPersonEmail}
-              onAddCount={this.handleAddCount}
-              onReduceCount={this.handleReduceCount}
-              rounding={this.state.rounding}
-              /> ) }
-
-        <UserTable 
-          handleInput = {this.handleInput}
-          remainingItems={this.state.remainingItems} 
-          filterText ={this.state.filterText}
-          rounding={this.state.rounding}
-        />
-
-        
-        {/* passing items to the following components as props */}
-        
-        {/* following button would be for the master breakdown */}
-        {/* <button onClick = {this.handleSendPersonEmail}>Send Email</button> */}
+            <UserTable 
+              handleInput = {handleInput}
+              remainingItems={remainingItems} 
+              filterText ={filterText}
+            />
+          </Col>
+        </Row>
+          {/* passing items to the following components as props */}
         <EmailModal 
           emailModal={this.state.emailModal} 
           toggleEmailModal={this.handleSendPersonEmail} 
           selectedPerson = {this.state.selectedPerson}
         />
-      </>
+
+      </div>
     );
   }
 }

@@ -1,9 +1,12 @@
 import React from 'react'
-import ProductRow from './ProductRow.js'
 
 export default class ProductTable extends React.Component {
-round5= (x) => {
-    return Math.ceil(x/5)*5;
+    round5= (x) => {
+        return Math.ceil(x/5)*5;
+    }
+
+    handleChange = (e) => {
+        this.props.handleInput(e.target.name, e.target.value, e.target.id);
     }
 
     render() {
@@ -15,28 +18,7 @@ round5= (x) => {
     // const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
     const productAfterRounding = parseFloat((productTotal + productRounding).toFixed(2))
 
-    const filterText = this.props.filterText;
-
-    const rows = [];
-    let lastItem = null;
-    
-    this.props.items.forEach((item) => {
-        if (item.description.indexOf(filterText) === -1) {
-        return;
-        }
-
-        if (item.description !== lastItem) {
-        rows.push(
-            <ProductRow
-            item={item}
-            key={item.itemId}
-            handleInput={this.props.handleInput} />
-        );
-        lastItem = item.description
-        }
-
-    });
-
+    const {filterText, addRow, items, handleInput} = this.props;
     return ( 
         <table>
         <thead>
@@ -48,41 +30,74 @@ round5= (x) => {
             </tr>
         </thead>
         <tbody>
-            {rows}
+            {items.map((item, index) => {
+                const subtotal = parseFloat((item.price * item.quantity).toFixed(2))
+                
+                return item.description.indexOf(filterText) === -1 
+                ? null 
+                : (
+                    <tr key={index}>
+                        <td>
+                            <input 
+                                name = 'description'
+                                value={item.description}
+                                onChange={(e) => handleInput(e.target.name, e.target.value, item.itemId)}/>
+                        </td>
+                        <td>
+                            <input
+                                name = 'quantity'
+                                size="2rem"
+                                value={item.quantity}
+                                onChange={(e) => handleInput(e.target.name, e.target.value, item.itemId)}/>
+                        </td>
+                        <td>
+                            <input 
+                                name='price'
+                                size="2rem"
+                                value = {item.price}
+                                onChange={(e) => handleInput(e.target.name, e.target.value, item.itemId)}/>
+                        </td>
+                        <td>{subtotal}</td>
+                    </tr>
+                );
+
+            })}
             <tr>
-            <td></td>
-            <td></td>
+                <td>
+                    <button type='button' onClick={addRow}>Add Item</button>
+                </td>
+                <td></td>
             {/* this should be total quanity - sum(other people's quantities) */}
-            <td>Subtotal</td>
-            <td>{productSubtotal}</td>
+                <td>Subtotal</td>
+                <td>{productSubtotal}</td>
             </tr>
             <tr>
-            <td></td>
-            <td></td>
-            {/* this should be total quanity - sum(other people's quantities) */}
-            <td>Tax (6%)</td>
-            <td>{productTax}</td>
+                <td></td>
+                <td></td>
+                {/* this should be total quanity - sum(other people's quantities) */}
+                <td>Tax (6%)</td>
+                <td>{productTax}</td>
             </tr>
             <tr>
-            <td></td>
-            <td></td>
-            {/* this should be total quanity - sum(other people's quantities) */}
-            <td>Total</td>
-            <td>{productTotal}</td>
+                <td></td>
+                <td></td>
+                {/* this should be total quanity - sum(other people's quantities) */}
+                <td>Total</td>
+                <td>{productTotal}</td>
             </tr>
             <tr>
-            <td></td>
-            <td></td>
-            {/* this should be total quanity - sum(other people's quantities) */}
-            <td>Rounding</td>
-            <td>{productRounding}</td>
+                <td></td>
+                <td></td>
+                {/* this should be total quanity - sum(other people's quantities) */}
+                <td>Rounding</td>
+                <td>{productRounding}</td>
             </tr>
-            <tr>
-            <td></td>
-            <td></td>
-            {/* this should be total quanity - sum(other people's quantities) */}
-            <td>Total after Rounding</td>
-            <td>{productAfterRounding}</td>
+                <tr>
+                <td></td>
+                <td></td>
+                {/* this should be total quanity - sum(other people's quantities) */}
+                <td>Total after Rounding</td>
+                <td>{productAfterRounding}</td>
             </tr>
         </tbody>
         </table>

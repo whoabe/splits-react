@@ -13,11 +13,11 @@ export default class ItemRow extends React.Component {
 
                 {/* Quantity +/- buttons */}
                 <td>
-                    <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
+                    <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
 
                     <span>{item.quantity}</span>
 
-                    <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
+                    <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
                 </td>
 
                 {/* price */}
