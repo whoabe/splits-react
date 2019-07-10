@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from 'reactstrap';
 
 export default class ItemRow extends React.Component {
 
@@ -13,11 +14,11 @@ export default class ItemRow extends React.Component {
 
                 {/* Quantity +/- buttons */}
                 <td>
-                    <button onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</button>
+                    <Button className="spinnerButtons" onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</Button>
 
-                    <span>{item.quantity}</span>
+                    <span className="px-1">{item.quantity}</span>
 
-                    <button onClick={() => this.props.onAddCount(personId, item.itemId)}>+</button>
+                    <Button className="spinnerButtons" onClick={() => this.props.onAddCount(personId, item.itemId)}>+</Button>
                 </td>
 
                 {/* price */}

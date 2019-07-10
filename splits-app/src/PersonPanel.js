@@ -39,12 +39,9 @@ export default class PersonPanel extends React.Component {
         });
 
         return (
-            <div>
+            <div className="personPanel">
                 <h3>{person.name} ID: {person.personId}</h3>
                 {/* make this editable */}
-
-                <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
-                <button onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
                 <table>
                     <thead>
                         <tr>
@@ -96,6 +93,8 @@ export default class PersonPanel extends React.Component {
                         
                     </tbody>
                 </table>
+                <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+                <button onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
             </div>
         )
     }

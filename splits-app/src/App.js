@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import ProductTable from './ProductTable';
 import PersonPanel from './PersonPanel';
 import axios from 'axios';
-import { Col, Row, Container } from 'reactstrap';
+import { Col, Row, Container, Button } from 'reactstrap';
 import loading from './loadingcolorbar.gif';
 /*
 Structure
@@ -417,15 +417,15 @@ class App extends React.Component {
     return (
       <div>
         <Row>
-          <Col md="6" style={{'height': '100vh'}} className="d-flex justify-content-center align-items-center">
+          <Col md="6" style={{'height': '100vh'}} className="receiptDisplay d-flex justify-content-center align-items-center">
             {
               !imageUrl && loaded === 0
             ? 
-              <Container>
-                <div className="form-group files d-flex flex-column justify-context-center">
+              <Container className="d-flex justify-content-center">
+                <div className="fileInputGroup form-group files d-flex flex-column justify-content-center w-50">
                   <label>Upload Your File </label>
-                  <input type="file" name="file" onChange={onChangeHandler}/>
-                  <button type="button" className="btn btn-success justify-self-between" onClick={onClickHandler}>Upload</button> 
+                  <input type="file" className="fileInput" name="file" onChange={onChangeHandler}/>
+                  <button type="button" className="btn btn-success justify-self-center" onClick={onClickHandler}>Upload</button> 
                 </div>
               </Container>
             :
@@ -436,7 +436,7 @@ class App extends React.Component {
                     <img src={loading} alt=""/>
                   </Container>
                 : 
-                  <div style={{overflowY: 'auto'}}>
+                  <div>
                     <img src={imageUrl} id="pic" onLoad={onImgLoad} onClick={imageCoordFinder} alt="" style={{width:"100%"}}/>
                   </div>
                 }
@@ -444,29 +444,32 @@ class App extends React.Component {
             }
           </Col>
           <Col md="6">
-            <SearchBar 
-            filterText = {filterText}
-            onFilterTextChange={handleFilterTextChange}/>
-
+            <Container className="searchBar w-50 mb-2 d-flex justify-content-center align-items-center">
+              <SearchBar 
+                filterText = {filterText}
+                onFilterTextChange={handleFilterTextChange}/>
+            </Container>
             <ProductTable 
               items={items} 
               filterText ={filterText}
               handleInput = {handleInput}
               addRow = {addRow}/>
 
-            <button onClick={handleAddPersonClick}>
+            <Button onClick={handleAddPersonClick}>
               Add Person
-            </button>
+            </Button>
 
             {/* creates the PersonPanel for each person */}
-            { persons.map((person, index) => 
-                <PersonPanel 
-                  key = {index}
-                  person={person} 
-                  onDeletePerson={handleDeletePerson} 
-                  onAddCount={handleAddCount}
-                  onReduceCount={handleReduceCount}
-                  /> ) }
+            <div className="personPanelHolder">
+              { persons.map((person, index) => 
+                  <PersonPanel 
+                    key = {index}
+                    person={person} 
+                    onDeletePerson={handleDeletePerson} 
+                    onAddCount={handleAddCount}
+                    onReduceCount={handleReduceCount}
+                    /> ) }
+            </div>
 
             <UserTable 
               handleInput = {handleInput}

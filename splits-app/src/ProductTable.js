@@ -1,18 +1,30 @@
 import React from 'react'
+import { Button, Table, Input, InputGroup, InputGroupAddon } from 'reactstrap'
 
 export default class ProductTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            taxRate: 6,
+        };
+    }
     round5= (x) => {
         return Math.ceil(x/5)*5;
     }
 
-    handleChange = (e) => {
-        this.props.handleInput(e.target.name, e.target.value, e.target.id);
+    taxChange = (e) => {
+        if (isNaN(e.target.value)){
+            this.setState({taxRate: 0})
+        }
+        else{
+            this.setState({taxRate: e.target.value})
+        }
     }
 
-    render() {
+    render () {
 
     const productSubtotal = parseFloat(((this.props.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
-    const productTax = parseFloat((productSubtotal * 0.06).toFixed(2));
+    const productTax = parseFloat((productSubtotal * this.state.taxRate/100).toFixed(2));
     const productTotal = parseFloat((productTax + productSubtotal).toFixed(2));
     const productRounding = this.props.rounding
     // const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
@@ -20,7 +32,7 @@ export default class ProductTable extends React.Component {
 
     const {filterText, addRow, items, handleInput} = this.props;
     return ( 
-        <table>
+        <Table size="sm">
         <thead>
             <tr>
             <th>Item</th>
@@ -64,7 +76,7 @@ export default class ProductTable extends React.Component {
             })}
             <tr>
                 <td>
-                    <button type='button' onClick={addRow}>Add Item</button>
+                    <Button type='button' className='btn btn-success' onClick={addRow}>Add Item</Button>
                 </td>
                 <td></td>
             {/* this should be total quanity - sum(other people's quantities) */}
@@ -75,7 +87,13 @@ export default class ProductTable extends React.Component {
                 <td></td>
                 <td></td>
                 {/* this should be total quanity - sum(other people's quantities) */}
-                <td>Tax (6%)</td>
+                <td>
+                    <InputGroup>
+                        <InputGroupAddon addonType="prepend">Tax</InputGroupAddon>
+                        <input name="tax" value={this.state.taxRate} onChange={this.taxChange}/>
+                        <InputGroupAddon addonType="append">%</InputGroupAddon>
+                    </InputGroup>
+                </td>
                 <td>{productTax}</td>
             </tr>
             <tr>
@@ -100,7 +118,7 @@ export default class ProductTable extends React.Component {
                 <td>{productAfterRounding}</td>
             </tr>
         </tbody>
-        </table>
+        </Table>
     );
     }
 }
