@@ -469,6 +469,7 @@ class App extends React.Component {
                     onDeletePerson={handleDeletePerson} 
                     onAddCount={handleAddCount}
                     onReduceCount={handleReduceCount}
+                    onSendPersonEmail={this.handleSendPersonEmail}
                     /> ) }
             </div>
 
