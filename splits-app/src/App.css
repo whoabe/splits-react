@@ -19,6 +19,26 @@
   color: white;
 }
 
+.personPanelHolder{
+  /* width: 100%; */
+  display: flex;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.personPanel {
+  display: inline-block;
+  padding: 1rem;
+  text-align: center;
+}
+
+.spinnerButtons{
+  padding: 0.3rem !important;
+  border: 0 !important;
+  line-height: 0.8rem !important;
+  background-color: azure !important;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -32,3 +52,78 @@
   }
 }
 
+.searchBar {
+  height: 10vh;
+  background-color: rgba(119, 119, 119, 0.658);
+  width: 50%;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+.receiptDisplay{
+  text-align: center;
+  overflow-x: hidden;
+}
+
+
+
+.fileInput{
+  display: flex;
+  justify-self: center;
+  margin-bottom: 1rem;
+}
+
+.btn,
+.btn-success,
+.btn-success.active,
+.btn-success:not(:disabled):not(.disabled).active{
+  border-radius: 1.5rem;
+  /* color: rgb(60, 60, 60) !important; */
+  /* background-color: #ffbb00af !important; */
+  color: azure;
+  border-radius: 1.5rem !important;
+  border-color: rgb(0, 0, 0) !important;
+}
+
+.btn-success{
+  background-color: rgb(85, 192, 64) !important;
+  /* background-color: rgb(91, 218, 65) !important; */
+  color: rgb(60, 60, 60) !important;
+}
+
+.row{
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  /* background-color: #4a4c4e !important; */
+  background-image: linear-gradient(to top, #3f4c66 0%, #1c2638 1%, #12397c 100%);
+  color: azure;
+  height: 100vh;
+}
+
+.col-md-6{
+  padding: 1.5rem;
+  padding-top: 0;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.fileInputGroup{
+  outline: 2px dashed azure;
+  outline-offset: 10px;
+}
+
+td,th{
+  color: azure;
+}
+
+input[name="quantity"]{
+  inline-size: 3rem;
+}
+
+input[name="price"]{
+  inline-size: 5rem;
+}
+
+input[name="tax"]{
+  inline-size: 2rem;
+}
