@@ -18,18 +18,30 @@ export default class EmailModal extends React.Component{
         //want to change the state and accept
         // console.log(event.target.value);
         this.setState({
-            emailValue: event.target.value
+            emailValue: event.target.value  
         })
     }
 
 
     handleSubmit = (event) => {
         event.preventDefault()
-        const data = this.props.data
-        const data2 = JSON.stringify(data)
+        // const data = this.props.data
+        // // const persons = this.props.persons
+        // const data2 = JSON.stringify(data)
         const validateEmail = EmailValidator.validate(this.state.emailValue)
+        let selectedPerson = this.props.selectedPerson
+        let emailData = []
+        emailData.push("name ", selectedPerson.name, "items ")
         
-        console.log("data "+data2)
+        for (let i = 0; i < selectedPerson.items.length; i++) { 
+            if (selectedPerson.items[i].quantity > 0) {
+                emailData.push("{", selectedPerson.items[i].description, "qty: ", selectedPerson.items[i].quantity, "@ ", selectedPerson.items[i].price, "}")
+            }
+        }
+        emailData.push("subtotal", selectedPerson.subtotal, "tax", selectedPerson.tax, "total", selectedPerson.total)
+        let emailData2=JSON.stringify(emailData)
+        // console.log("emaildata " +emailData2)
+        // console.log("data "+data2)
 
         if (validateEmail){
                
@@ -41,7 +53,7 @@ export default class EmailModal extends React.Component{
                 params: {
                     "email": this.state.emailValue,
                     "subject": "Message From Splits",
-                    "message": data2
+                    "message": emailData2
                     // in message, want to input the breakdown of the bill, and how much each people owe.
                     /*
                     person 1: items: [
@@ -99,8 +111,10 @@ export default class EmailModal extends React.Component{
                 <Modal isOpen={this.props.emailModal} toggle={this.props.toggleEmailModal}>
                 {/* isOpen is the emailModal property (basically passing down props from the navbar state: emailModal) same thing for toggle*/}
 
-                    <ModalHeader toggle={this.props.toggleEmailUpModal}>Send Email</ModalHeader>
+                    <ModalHeader toggle={this.props.toggleEmailModal}>Send Email</ModalHeader>
                     {/* why is this toggle needed in here?? */}
+
+                    
 
                     <ModalBody> 
 

@@ -44,6 +44,7 @@ export default class PersonPanel extends React.Component {
                 {/* make this editable */}
 
                 <button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+                <button onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
                 <table>
                     <thead>
                         <tr>
