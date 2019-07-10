@@ -15,8 +15,8 @@ App
   -Product Table
     -Product Row
     -*Manual add
-  -Person Table
-    -Person Row
+  -PersonPanel
+    -Item Row
   -User Table
     -User Row
 */
@@ -55,7 +55,15 @@ class App extends React.Component {
       filterText: '',
       items: [],
       persons: [],
-      remainingItems: [],
+      remainingItems: [...items],
+      rounding: 0,
+      emailModal: false,
+      data: [],
+      user: [],
+      selectedPerson: {},
+      subtotal: 0,
+      tax: 0,
+      total: 0,
       selectedFile: null,
       imageWidth: 0,
       imageHeight: 0,
@@ -67,6 +75,38 @@ class App extends React.Component {
 
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
   }
+  
+  // round5= (x) => {
+  //   return Math.ceil(x/5)*5;
+  //   }
+
+  // roundingFunction = () => {
+  //   let rounding2 = this.state.rounding
+  //   let subtotal2 = this.state.subtotal
+  //   let subtotTotal = 0
+
+  //   for (let i = 0; i < this.state.items.length; i++) {
+      
+  //     subtotal2 = (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
+  //     // parseFloat(string) returns an float
+  //     subtotTotal += subtotal2
+
+  //   }
+  //   // console.log('subtotal ' + subtotal2)
+  //   let tax = parseFloat((subtotTotal*0.06).toFixed(2));
+
+  //   // console.log('tax ' + tax)
+  //   let total = tax + subtotTotal;
+  //   // console.log('total ' + total)
+  //   let roundedTotal = Math.ceil(total/5)*5;
+  
+  //   rounding2 = parseFloat((roundedTotal-total).toFixed(2));
+  //   this.setState({
+  //     rounding: rounding2, subtotal: subtotal2
+    
+  //   })
+  // }
+  
 
   handleFilterTextChange(filterText) {
     this.setState({
@@ -78,7 +118,10 @@ class App extends React.Component {
     const newPerson = {
       name: 'New Person',
       personId: personId++,
-      items: []
+      items: [],
+      subtotal: 0,
+      tax: 0,
+      total: 0,
     }
     // newPerson is an object with name: New Person, personId=personID++, and empty item list
 
@@ -95,10 +138,25 @@ class App extends React.Component {
       })
     }
     this.setState({
-      persons: [...this.state.persons, newPerson]
+      persons: [...this.state.persons, newPerson],
+      data: [...this.state.data, newPerson]
     //   persons is a list with the previous persons and the new person
     })
 
+  }
+
+
+  // handleSendPersonEmail
+  handleSendPersonEmail = (person) => {
+    
+    // want to pass the person's id to EmailModal
+    // var personsCopy = [...this.state.persons];
+    // var index = personsCopy.findIndex(personsCopy => personsCopy.personId === personId)
+    // const personIndex = persons.findIndex(persons => persons.personId === personId)
+    this.setState(prevState => ({
+      emailModal: !prevState.emailModal,
+      selectedPerson: person
+    })); 
   }
 
   handleDeletePerson = personId => { 
@@ -114,11 +172,13 @@ class App extends React.Component {
     }
 
   }
-  
+
 
   refreshRemainder = () => {
     // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
     let remainingItems = [...this.state.remainingItems]
+
+    const user = {...this.state.user}
 
     for (let i = 0; i < remainingItems.length; i++) {
 
@@ -135,9 +195,51 @@ class App extends React.Component {
         quantity: count 
       }
     }
+    
+    
+    this.setState({remainingItems}, () => {
+      // this.round()
+      user.items = [...this.state.remainingItems]
+      this.setState({ user })
+    });
 
-    this.setState({remainingItems})
+// want this.state.user.items to be equal to remainingItems
+    
+  }
 
+  subtotalFunction = (personId) => {
+
+    let subtotal = this.state.subtotal
+    let tax = this.state.tax
+    let total = this.state.total
+    const persons = [...this.state.persons]
+
+    let personIndex = persons.findIndex(persons => persons.personId === personId)
+    
+    // pass personid to find the correct person, 
+    persons[personIndex] = {...persons[personIndex]}
+    // persons[personIndex] is the person you are changing
+    // persons[personIndex] is a duplicate of the person you are changing
+
+    // let personItems = persons[personIndex].items
+
+    // run the calcs to find the subtotal, tax, total
+      
+
+    for (let i = 0; i < persons[personIndex].items.length; i++) { 
+      if (persons[personIndex].items[i].quantity > 0) {
+        subtotal += parseFloat((persons[personIndex].items[i].quantity * persons[personIndex].items[i].price).toFixed(2))
+      }
+    }
+    tax = parseFloat((subtotal * 0.06).toFixed(2))
+    total = parseFloat((subtotal + tax).toFixed(2))
+
+    persons[personIndex].subtotal = subtotal
+    persons[personIndex].tax = tax
+    persons[personIndex].total = total
+
+    // setstate on the subtotal, tax, total, and persons
+    this.setState({ persons })
   }
 
   handleAddCount = (personId, itemId) => {
@@ -162,7 +264,7 @@ class App extends React.Component {
 
     persons[personIndex].items[itemIndex].quantity++
 
-    this.setState({ persons })
+    this.setState({ persons }, () => this.subtotalFunction(personId))
     this.refreshRemainder()
   }
 
@@ -183,7 +285,7 @@ class App extends React.Component {
     persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
     persons[personIndex].items[itemIndex].quantity--
 
-    this.setState({ persons })
+    this.setState({ persons }, () => this.subtotalFunction(personId))
     this.refreshRemainder()
   }
 
@@ -202,13 +304,10 @@ class App extends React.Component {
   }
 
 
-  componentDidMount() {
 
-  //   this.setState ({
-  //     items:items
-  //   }
-  //   )
-  }
+  // round = () => {
+  //   this.roundingFunction()
+  // }
   // if app mounted, then set the state of items to be items
   // will later need to get the data from an axios get from the flask server
   
@@ -224,6 +323,30 @@ class App extends React.Component {
     this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
+  componentDidMount() {
+
+    // this.round()
+    let user = {
+      name: 'You/User',
+      userId: 0,
+      items: [...items]
+    }
+    // add user into user state here
+    this.setState({
+      user: user,
+      data: [...this.state.data, user]
+    //   persons is a list with the previous persons and the new person
+    })
+  }
+
+  componentDidUpdate() {
+    // console.log("data "+JSON.stringify(this.state.data))
+    // console.log("persons "+JSON.stringify(this.state.persons))
+    // console.log("user.items " +JSON.stringify(this.state.user.items))
+   
+  }
+
+  render() {
   onChangeHandler = e => {
     this.setState({
       selectedFile: e.target.files[0],
@@ -353,7 +476,11 @@ class App extends React.Component {
           </Col>
         </Row>
           {/* passing items to the following components as props */}
-          
+        <EmailModal 
+          emailModal={this.state.emailModal} 
+          toggleEmailModal={this.handleSendPersonEmail} 
+          selectedPerson = {this.state.selectedPerson}
+        />
 
       </div>
     );

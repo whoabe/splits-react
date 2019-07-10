@@ -14,7 +14,8 @@ export default class ProductTable extends React.Component {
     const productSubtotal = parseFloat(((this.props.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
     const productTax = parseFloat((productSubtotal * 0.06).toFixed(2));
     const productTotal = parseFloat((productTax + productSubtotal).toFixed(2));
-    const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
+    const productRounding = this.props.rounding
+    // const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
     const productAfterRounding = parseFloat((productTotal + productRounding).toFixed(2))
 
     const {filterText, addRow, items, handleInput} = this.props;
