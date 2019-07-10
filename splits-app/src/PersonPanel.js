@@ -1,6 +1,7 @@
 import React from 'react';
 import ItemRow from './ItemRow'
 
+
 export default class PersonPanel extends React.Component {
     render() {
 

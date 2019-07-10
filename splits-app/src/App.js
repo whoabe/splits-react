@@ -7,6 +7,7 @@ import PersonPanel from './PersonPanel';
 import axios from 'axios';
 import { Col, Row, Container, Button } from 'reactstrap';
 import loading from './loadingcolorbar.gif';
+import EmailModal from './EmailModal';
 /*
 Structure
 
@@ -55,7 +56,7 @@ class App extends React.Component {
       filterText: '',
       items: [],
       persons: [],
-      remainingItems: [...items],
+      remainingItems: [],
       rounding: 0,
       emailModal: false,
       data: [],
@@ -329,7 +330,7 @@ class App extends React.Component {
     let user = {
       name: 'You/User',
       userId: 0,
-      items: [...items]
+      items: [...this.state.items]
     }
     // add user into user state here
     this.setState({
@@ -346,13 +347,13 @@ class App extends React.Component {
    
   }
 
-  render() {
   onChangeHandler = e => {
     this.setState({
       selectedFile: e.target.files[0],
       loaded: 0,
     })
   }
+
 
   onClickHandler = () => {
     const data = new FormData() 
@@ -407,7 +408,7 @@ class App extends React.Component {
     this.setState({displayHeight:img.offsetHeight,
     displayWidth:img.offsetWidth});
   }
-
+  
   render() {
     // can add const { items, person, etc} = this.state 
     // and then remove this.state for the things in the return function
@@ -475,6 +476,7 @@ class App extends React.Component {
               handleInput = {handleInput}
               remainingItems={remainingItems} 
               filterText ={filterText}
+              rounding={this.state.rounding}
             />
           </Col>
         </Row>
@@ -489,6 +491,7 @@ class App extends React.Component {
     );
   }
 }
+
 
 
 

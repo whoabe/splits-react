@@ -103,20 +103,20 @@ export default class ProductTable extends React.Component {
                 <td>Total</td>
                 <td>{productTotal}</td>
             </tr>
-            <tr>
+            {/* <tr>
                 <td></td>
                 <td></td>
-                {/* this should be total quanity - sum(other people's quantities) */}
+                this should be total quanity - sum(other people's quantities)
                 <td>Rounding</td>
                 <td>{productRounding}</td>
             </tr>
                 <tr>
                 <td></td>
                 <td></td>
-                {/* this should be total quanity - sum(other people's quantities) */}
+                this should be total quanity - sum(other people's quantities)
                 <td>Total after Rounding</td>
                 <td>{productAfterRounding}</td>
-            </tr>
+            </tr> */}
         </tbody>
         </Table>
     );
