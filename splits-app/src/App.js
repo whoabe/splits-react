@@ -395,15 +395,38 @@ class App extends React.Component {
     .then((response) => {
       console.log(response)
       if (response.data!=='not found'){
-        const newItem = {itemId : itemId++, price: response.data.unit_price, quantity: response.data.quantity, description: response.data.description}
-        this.setState({items:[...this.state.items, newItem]})
-        this.setState({remainingItems:[...this.state.remainingItems, newItem]})
+        const clickedItem = {price: response.data.unit_price, quantity: response.data.quantity, description: response.data.description}
+        const existingItemId = this.checkExistingItem(clickedItem)
+        if (existingItemId !== -1 && this.state.items.length > 0){
+          const itemsArrayCopy = [...this.state.items]
+          itemsArrayCopy[existingItemId-1].quantity += clickedItem.quantity
+          this.setState({
+            items: itemsArrayCopy,
+            remainingItems : itemsArrayCopy
+          })
+        } else{
+          clickedItem['itemId'] = itemId++
+          this.setState({
+            items:[...this.state.items, clickedItem],
+            remainingItems:[...this.state.remainingItems, clickedItem]
+          })
+        }
       }
     })
     .catch(function (error) {
       console.log(error);
     });
 
+  }
+
+  checkExistingItem = (itemToCheck) =>{
+    for (let i=0; i<this.state.items.length; i++){
+      if((this.state.items[i].description === itemToCheck.description) && (this.state.items[i].price === itemToCheck.price)){
+        console.log(this.state.items[i].itemId)
+        return this.state.items[i].itemId
+      }
+    }
+    return -1
   }
 
   onImgLoad = ({target:img}) => {
@@ -420,11 +443,11 @@ class App extends React.Component {
     return (
       <div>
         <Row>
-          <Col md="6" style={{'height': '100vh'}} className="receiptDisplay d-flex justify-content-center align-items-center">
+          <Col md="6" style={{'height': '100vh'}} className="receiptDisplay">
             {
               !imageUrl && loaded === 0
             ? 
-              <Container className="d-flex justify-content-center">
+              <Container className="h-100 d-flex justify-content-center align-items-center">
                 <div className="fileInputGroup form-group files d-flex flex-column justify-content-center w-50">
                   <label>Upload Your File </label>
                   <input type="file" className="fileInput" name="file" onChange={onChangeHandler}/>
@@ -432,10 +455,10 @@ class App extends React.Component {
                 </div>
               </Container>
             :
-              <div>
+              <div className="h-100">
                 {loaded !== 1
                 ? 
-                  <Container className="d-flex justify-content-center align-items-center"> 
+                  <Container className="h-100 d-flex justify-content-center align-items-center"> 
                     <img src={loading} alt=""/>
                   </Container>
                 : 
