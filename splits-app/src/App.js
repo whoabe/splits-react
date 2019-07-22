@@ -148,6 +148,7 @@ class App extends React.Component {
 
 
   // handleSendPersonEmail
+  // takes in person, which is an element of the state: persons defined in the persons.map
   handleSendPersonEmail = (person) => {
     
     // want to pass the person's id to EmailModal
@@ -161,7 +162,6 @@ class App extends React.Component {
   }
 
   handleDeletePerson = personId => { 
-
     var personsCopy = [...this.state.persons]; 
     var index = personsCopy.findIndex(personsCopy => personsCopy.personId === personId)
     if (index !== -1) {
@@ -209,14 +209,13 @@ class App extends React.Component {
   }
 
   subtotalFunction = (personId) => {
-
+  // calculates subtotal, tax, total for the specified person
     let subtotal = this.state.subtotal
     let tax = this.state.tax
     let total = this.state.total
     const persons = [...this.state.persons]
 
     let personIndex = persons.findIndex(persons => persons.personId === personId)
-    
     // pass personid to find the correct person, 
     persons[personIndex] = {...persons[personIndex]}
     // persons[personIndex] is the person you are changing
@@ -225,8 +224,6 @@ class App extends React.Component {
     // let personItems = persons[personIndex].items
 
     // run the calcs to find the subtotal, tax, total
-      
-
     for (let i = 0; i < persons[personIndex].items.length; i++) { 
       if (persons[personIndex].items[i].quantity > 0) {
         subtotal += parseFloat((persons[personIndex].items[i].quantity * persons[personIndex].items[i].price).toFixed(2))
@@ -290,6 +287,7 @@ class App extends React.Component {
     this.refreshRemainder()
   }
 
+  // adds new items to the items state list
   addRow = () => {
     const newItem = {
       itemId : itemId++,
@@ -329,6 +327,7 @@ class App extends React.Component {
     
     // this.round()
     
+    // adding user and having items set to a copy of items state
     let user = {
       name: 'You/User',
       userId: 0,
@@ -358,6 +357,7 @@ class App extends React.Component {
 
 
   onClickHandler = () => {
+  // function for taking in the receipt image and sending it to the flask server api and then setting the response as states: imageUrl, imageWidth, imageHeight, receiptId
     const data = new FormData() 
     data.append('user_file', this.state.selectedFile)
     //to make loading screen appear lol
@@ -379,6 +379,7 @@ class App extends React.Component {
   }
 
   imageCoordFinder = (e) => {
+  // finds the coords of the displayed image based on the displayview and image size states and also sets the newitem states if the clickedcoords are in the receipt
     var xCoordinate = parseInt(e.nativeEvent.offsetX);
     var yCoordinate = parseInt(e.nativeEvent.offsetY);
     const {imageWidth, imageHeight, displayHeight, displayWidth} = this.state
@@ -430,13 +431,12 @@ class App extends React.Component {
   }
 
   onImgLoad = ({target:img}) => {
+    // loads the image 
     this.setState({displayHeight:img.offsetHeight,
     displayWidth:img.offsetWidth});
   }
   
   render() {
-    // can add const { items, person, etc} = this.state 
-    // and then remove this.state for the things in the return function
     const { items, imageUrl, loaded, filterText, persons, remainingItems } = this.state
     const { onChangeHandler, onClickHandler, onImgLoad, imageCoordFinder, addRow, handleFilterTextChange, handleInput, handleAddPersonClick, handleDeletePerson, handleAddCount,
       handleReduceCount } = this
