@@ -42,13 +42,13 @@ export default class PersonPanel extends React.Component {
 
         return (
             <div className="personPanel">
-                <h3>{person.name} ID: {person.personId}</h3>
+                <h5>{person.name} ID: {person.personId}</h5>
                 {/* make this editable */}
                 <table>
                     <thead>
                         <tr>
                             <th>Item</th>
-                            <th>Quantity</th>
+                            <th>Qty</th>
                             <th>Price</th>
                             <th>Subtotal</th>   
                         </tr>
@@ -60,14 +60,14 @@ export default class PersonPanel extends React.Component {
                             <td></td>
                             {/* this should be total quanity - sum(other people's quantities) */}
                             <td>Subtotal</td>
-                            <td>{personSubtotal}</td>
+                            <td className="money">{personSubtotal}</td>
                         </tr>
                         <tr>
                             <td></td>
                             <td></td>
                             {/* this should be total quanity - sum(other people's quantities) */}
                             <td>Tax (6%)</td>
-                            <td>{personTax}</td>
+                            <td className="money">{personTax}</td>
                         </tr>
                       
                         <tr>
@@ -75,7 +75,7 @@ export default class PersonPanel extends React.Component {
                             <td></td>
                             {/* this should be total quanity - sum(other people's quantities) */}
                             <td>Total</td>
-                            <td>{personTotal}</td>
+                            <td className="money">{personTotal}</td>
                         </tr>
                         
                         {/* <tr>
@@ -95,8 +95,9 @@ export default class PersonPanel extends React.Component {
                         
                     </tbody>
                 </table>
-                <Button onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</Button>
-                <Button onClick={() => this.props.onSendPersonEmail(person)}>Send Email</Button>
+                <button class = "delete-btn" onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+                <div class="divider"/>
+                <button class = "email-btn" onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
             </div>
         )
     }

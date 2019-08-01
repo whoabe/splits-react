@@ -49,7 +49,9 @@ export default class EmailModal extends React.Component{
             // having zapier hook in the front end is a bad idea since client side is exposed to public and CORS
             axios({
                 method: 'get',
+                // change this so that it turns into a post to the flask server
                 url: 'https://hooks.zapier.com/hooks/catch/5311861/oyjxd9c',
+                // change this so that it sends to the flask server
                 params: {
                     "email": this.state.emailValue,
                     "subject": "Message From Splits",
@@ -67,6 +69,20 @@ export default class EmailModal extends React.Component{
                     */
                 }
               })
+
+
+            //   sending the data to the flask server
+            // axios({
+            //     method: 'POST',
+            //     url: 'http://localhost:5000/api/v1/detect/upload',
+            //     data: emaildata2,
+            // need to also pass in email value
+            //     headers: { 
+            //       'content-type': 'multipart/form-data',
+            //     }
+            //   })
+
+
             
             // cant send to sendgrid from react
             // axios({

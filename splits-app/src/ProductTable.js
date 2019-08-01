@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Table, Input, InputGroup, InputGroupAddon } from 'reactstrap'
+import { Table, InputGroup, InputGroupAddon } from 'reactstrap'
 
 export default class ProductTable extends React.Component {
     constructor(props) {
@@ -26,9 +26,9 @@ export default class ProductTable extends React.Component {
     const productSubtotal = parseFloat(((this.props.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
     const productTax = parseFloat((productSubtotal * this.state.taxRate/100).toFixed(2));
     const productTotal = parseFloat((productTax + productSubtotal).toFixed(2));
-    const productRounding = this.props.rounding
+    // const productRounding = this.props.rounding
     // const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
-    const productAfterRounding = parseFloat((productTotal + productRounding).toFixed(2))
+    // const productAfterRounding = parseFloat((productTotal + productRounding).toFixed(2))
 
     const {filterText, addRow, items, handleInput} = this.props;
     return ( 
@@ -36,7 +36,7 @@ export default class ProductTable extends React.Component {
         <thead>
             <tr>
             <th>Item</th>
-            <th>Quantity</th>
+            <th>Qty</th>
             <th>Price</th>
             <th>Subtotal</th>
             </tr>
@@ -69,19 +69,21 @@ export default class ProductTable extends React.Component {
                                 value = {item.price}
                                 onChange={(e) => handleInput(e.target.name, e.target.value, item.itemId)}/>
                         </td>
-                        <td>{subtotal}</td>
+                        <td className="money">{subtotal}</td>
                     </tr>
                 );
 
             })}
             <tr>
-                <td>
-                    <Button type='button' className='btn btn-success' onClick={addRow}>Add Item</Button>
+                <td className = "addItemCol">
+                    {/* <Button type='button' className='btn-success' onClick={addRow}>Add Item</Button> */}
+                    <button type="button" className="btn btn-success"onClick={addRow}>Add Item</button>
+                    {/* <button onClick={addRow} class="addItemButton">Add Item</button> */}
                 </td>
                 <td></td>
             {/* this should be total quanity - sum(other people's quantities) */}
                 <td>Subtotal</td>
-                <td>{productSubtotal}</td>
+                <td className="money">{productSubtotal}</td>
             </tr>
             <tr>
                 <td></td>
@@ -94,15 +96,15 @@ export default class ProductTable extends React.Component {
                         <InputGroupAddon addonType="append">%</InputGroupAddon>
                     </InputGroup>
                 </td>
-                <td>{productTax}</td>
+                <td className="money">{productTax}</td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 {/* this should be total quanity - sum(other people's quantities) */}
                 <td>Total</td>
-                <td>{productTotal}</td>
-            </tr>
+                <td className="money">{productTotal}</td>
+            </tr>   
             {/* <tr>
                 <td></td>
                 <td></td>

@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import ProductTable from './ProductTable';
 import PersonPanel from './PersonPanel';
 import axios from 'axios';
-import { Col, Row, Container, Button } from 'reactstrap';
+import { Col, Row, Container } from 'reactstrap';
 import loading from './loadingcolorbar.gif';
 import EmailModal from './EmailModal';
 /*
@@ -77,36 +77,51 @@ class App extends React.Component {
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
   }
   
-  // round5= (x) => {
-  //   return Math.ceil(x/5)*5;
-  //   }
+  isFloat(n) {
+    return n === +n && n !== (n|0);
+}
 
-  // roundingFunction = () => {
-  //   let rounding2 = this.state.rounding
-  //   let subtotal2 = this.state.subtotal
-  //   let subtotTotal = 0
+  roundingFunction = () => {
+    let rounding2 = this.state.rounding
+    // let subtotal2 = this.state.subtotal
+    // let subtotTotal = 0
 
-  //   for (let i = 0; i < this.state.items.length; i++) {
+    const subtotal2 = parseFloat(((this.state.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
+    // for (let i = 0; i < this.state.items.length; i++) {
+    //   // if (this.state.items[i].price && this.state.items[i].quantity)
+    //   const subtotal2 = 
       
-  //     subtotal2 = (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
-  //     // parseFloat(string) returns an float
-  //     subtotTotal += subtotal2
+    //   // (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
+    //   // parseFloat(string) returns an float
+    //   subtotTotal += subtotal2
 
-  //   }
-  //   // console.log('subtotal ' + subtotal2)
-  //   let tax = parseFloat((subtotTotal*0.06).toFixed(2));
+    // }
+    // console.log('subtotal ' + subtotal2)
+    let tax = parseFloat((subtotal2*0.06).toFixed(2));
 
-  //   // console.log('tax ' + tax)
-  //   let total = tax + subtotTotal;
-  //   // console.log('total ' + total)
-  //   let roundedTotal = Math.ceil(total/5)*5;
+    // console.log('tax ' + tax)
+    let total = tax + subtotal2;
+    // console.log('total ' + total)
+
+    let roundedTotal = Math.round(total*100/5) *5/100
   
-  //   rounding2 = parseFloat((roundedTotal-total).toFixed(2));
-  //   this.setState({
-  //     rounding: rounding2, subtotal: subtotal2
+    /*
+    0.00 -> 0
+    0.01 -> 0 (-0.01)
+    0.02 -> 0 (-0.02)
+    0.03 -> 0.05 (+0.02)
+    0.04 -> 0.05 (+0.01)
+    0.05 -> 0.05 (0)
+    */
+
+    // console.log('roundedTotal ' + roundedTotal)
+    rounding2 = parseFloat((roundedTotal-total).toFixed(2));
+    // console.log('rounding2 ' + rounding2)
+    this.setState({
+      rounding: rounding2, subtotal: subtotal2
     
-  //   })
-  // }
+    })
+  }
   
 
   handleFilterTextChange(filterText) {
@@ -117,14 +132,14 @@ class App extends React.Component {
 
   handleAddPersonClick= () => {
     const newPerson = {
-      name: 'New Person',
+      name: 'Person',
       personId: personId++,
       items: [],
       subtotal: 0,
       tax: 0,
       total: 0,
     }
-    // newPerson is an object with name: New Person, personId=personID++, and empty item list
+    // newPerson is an object with name: Person, personId=personID++, and empty item list
 
     for (let index in this.state.items) {
         // this.state.items is referencing the items states list, not the items list
@@ -176,16 +191,21 @@ class App extends React.Component {
 
 
   refreshRemainder = () => {
+    // this function calculates remainingItems if it is called
+
     // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
     let remainingItems = [...this.state.remainingItems]
 
     const user = {...this.state.user}
-
-    for (let i = 0; i < remainingItems.length; i++) {
-
-      let count = this.state.items[i].quantity
+    
+    for (let i = 0; i < this.state.items.length; i++) {
+    // goes through every item
+    
+      let count = Number(this.state.items[i].quantity)
 
       for (let j = 0; j < this.state.persons.length; j++) {
+        console.log(this.state.persons[j].items[i])
+        // debugger;
         count -= this.state.persons[j].items[i].quantity
       }
       
@@ -199,7 +219,7 @@ class App extends React.Component {
     
     
     this.setState({remainingItems}, () => {
-      // this.round()
+      this.roundingFunction()
       user.items = [...this.state.remainingItems]
       this.setState({ user })
     });
@@ -257,6 +277,7 @@ class App extends React.Component {
 
     
     if (this.state.remainingItems[itemIndex].quantity === 0) { return }
+    // if there is no more quantity of this item, then returns out
 
     persons[personIndex].items[itemIndex] = {...persons[personIndex].items[itemIndex]}
 
@@ -291,41 +312,43 @@ class App extends React.Component {
   addRow = () => {
     const newItem = {
       itemId : itemId++,
-      price: "",
+      price: 0,
       quantity: 0,
       description: ""
     }
     const tempItems = [...this.state.items, newItem]
     const tempRemainder = [...this.state.remainingItems, newItem]
+
+    const tempPersons = [...this.state.persons]
+    for (let i = 0; i < tempPersons.length; i++) {
+      tempPersons[i].items.push(newItem)
+  }
+
     this.setState({
       items: tempItems,
-      remainingItems: tempRemainder})
+      remainingItems: tempRemainder,
+      persons: tempPersons
+    })
   }
 
 
-
-  // round = () => {
-  //   this.roundingFunction()
-  // }
-  // if app mounted, then set the state of items to be items
-  // will later need to get the data from an axios get from the flask server
-  
-
   handleInput = (valueType, newValue, targetId) => {
+    // takes in e.target.name, e.target.value, item.itemId)
+
     const items = this.state.items.map(item => ({
       ...item,
       [valueType]: item.itemId === targetId ? newValue : item[valueType]
+      // item.itemId === targetId ? (valueType === ("quantity" || "price") ? float(newValue) : newValue) : item[valueType]
+      //  [valueType] will change the valuetype i pass in. e.g. if i pass in 'quantity', it will change the item[quantity] to the newvalue I passed in
+      // condition ? value-if-true : value-if-false
     }))
-
-
-
     this.setState({items : items}, ()=>this.refreshRemainder())
   }
 
   componentDidMount() {
     
     
-    // this.round()
+    this.roundingFunction()
     
     // adding user and having items set to a copy of items state
     let user = {
@@ -342,6 +365,7 @@ class App extends React.Component {
   }
 
   componentDidUpdate() {
+
     // console.log("data "+JSON.stringify(this.state.data))
     // console.log("persons "+JSON.stringify(this.state.persons))
     // console.log("user.items " +JSON.stringify(this.state.user.items))
@@ -449,7 +473,7 @@ class App extends React.Component {
             ? 
               <Container className="h-100 d-flex justify-content-center align-items-center">
                 <div className="fileInputGroup form-group files d-flex flex-column justify-content-center w-50">
-                  <label>Upload Your File </label>
+                  <label>Upload Receipt Image </label>
                   <input type="file" className="fileInput" name="file" onChange={onChangeHandler}/>
                   <button type="button" className="btn btn-success justify-self-center" onClick={onClickHandler}>Upload</button> 
                 </div>
@@ -481,9 +505,10 @@ class App extends React.Component {
               handleInput = {handleInput}
               addRow = {addRow}/>
 
-            <Button onClick={handleAddPersonClick}>
+            {/* <Button onClick={handleAddPersonClick}>
               Add Person
-            </Button>
+            </Button> */}
+            <button type="button" className="btn btn-success"onClick={handleAddPersonClick}>Add Person</button>
 
             {/* creates the PersonPanel for each person */}
             <div className="personPanelHolder">

@@ -26,10 +26,59 @@
   flex-wrap: nowrap;
 }
 
+
+
+
+table, th, td {
+  border: 1px solid#ffffff;
+  vertical-align: middle;
+  padding: 5px;
+}
+
+
+
+.addItemCol{
+  text-align: center;
+}
+
+.btn {
+  display: inline-block;
+}
+
+/*  */
+/* .addItemButton {
+	-moz-box-shadow: 0px 0px 0px 2px #9fb4f2;
+	-webkit-box-shadow: 0px 0px 0px 2px #9fb4f2;
+	box-shadow: 0px 0px 0px 2px #9fb4f2;
+	background-color:#7892c2;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	border-radius:10px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:19px;
+	
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+}
+.addItemButton:hover {
+	background-color:#476e9e;
+}
+.addItemButton:active {
+	position:relative;
+	top:1px;
+} */
+
+/*  */
+
 .personPanel {
   display: inline-block;
   padding: 1rem;
   text-align: center;
+  margin-left: -10px;
 }
 
 .spinnerButtons{
@@ -54,15 +103,17 @@
 
 .searchBar {
   height: 10vh;
-  background-color: rgba(119, 119, 119, 0.658);
+  /* background-color: rgba(119, 119, 119, 0.658); */
   width: 50%;
   border-bottom-left-radius: 1rem;
   border-bottom-right-radius: 1rem;
+  padding: 0%;
 }
 
 .receiptDisplay{
   text-align: center;
   overflow-x: hidden;
+  border-right:dashed #ffffff 1px; 
 }
 
 
@@ -77,25 +128,123 @@
 .btn-success,
 .btn-success.active,
 .btn-success:not(:disabled):not(.disabled).active{
-  border-radius: 1.5rem;
+  /* border-radius: 1.5rem; */
   /* color: rgb(60, 60, 60) !important; */
   /* background-color: #ffbb00af !important; */
   color: azure;
-  border-radius: 1.5rem !important;
+  /* border-radius: 1.5rem !important; */
   border-color: rgb(0, 0, 0) !important;
 }
 
 .btn-success{
-  background-color: rgb(85, 192, 64) !important;
-  /* background-color: rgb(91, 218, 65) !important; */
-  color: rgb(60, 60, 60) !important;
+  background: #4caf50;
+  background-image: -webkit-linear-gradient(top, #4caf50, #49874b);
+  background-image: -moz-linear-gradient(top, #4caf50, #49874b);
+  background-image: -ms-linear-gradient(top, #4caf50, #49874b);
+  background-image: -o-linear-gradient(top, #4caf50, #49874b);
+  background-image: linear-gradient(to bottom, #4caf50, #49874b);
+  -webkit-border-radius: 10;
+  -moz-border-radius: 10;
+  border-radius: 10px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
+.btn-success:hover {
+  background: #4caf50;
+  background-image: -webkit-linear-gradient(top, #4caf50, #4caf50);
+  background-image: -moz-linear-gradient(top, #4caf50, #4caf50);
+  background-image: -ms-linear-gradient(top, #4caf50, #4caf50);
+  background-image: -o-linear-gradient(top, #4caf50, #4caf50);
+  background-image: linear-gradient(to bottom, #4caf50, #4caf50);
+  text-decoration: none;
+}
+
+.delete-btn {
+  background: #dc3545;
+  background-image: -webkit-linear-gradient(top, #dc3545, #c72031);
+  background-image: -moz-linear-gradient(top, #dc3545, #c72031);
+  background-image: -ms-linear-gradient(top, #dc3545, #c72031);
+  background-image: -o-linear-gradient(top, #dc3545, #c72031);
+  background-image: linear-gradient(to bottom, #dc3545, #c72031);
+  -webkit-border-radius: 10;
+  -moz-border-radius: 10;
+  border-radius: 10px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  border-color: rgb(0, 0, 0) !important;
+  /* margin-left: 0px; */
+  margin-top: 5px;
+
+}
+.delete-btn:hover {
+  background: #aa2a36;
+  /* background-image: -webkit-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: -moz-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: -ms-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: -o-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: linear-gradient(to bottom, #db515f, #bd4f5c); */
+  text-decoration: none;
+}
+.divider{
+  width:5px;
+  height:auto;
+  display:inline-block;
+}
+
+.email-btn {
+  background: #4caf50;
+  background-image: -webkit-linear-gradient(top, #4caf50, #4caf50);
+  background-image: -moz-linear-gradient(top, #4caf50, #4caf50);
+  background-image: -ms-linear-gradient(top, #4caf50, #4caf50);
+  background-image: -o-linear-gradient(top, #4caf50, #4caf50);
+  background-image: linear-gradient(to bottom, #4caf50, #4caf50);
+  -webkit-border-radius: 10;
+  -moz-border-radius: 10;
+  border-radius: 10px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  border-color: rgb(0, 0, 0) !important;
+  /* margin-right: -15px; */
+  margin-top: 5px;
+}
+.email-btn:hover {
+  background: #218838;
+  /* background-image: -webkit-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: -moz-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: -ms-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: -o-linear-gradient(top, #db515f, #bd4f5c);
+  background-image: linear-gradient(to bottom, #db515f, #bd4f5c); */
+  text-decoration: none;
+}
+
+.email-btn:focus{
+  box-shadow: -5 0 0 0.2rem rgba(72,180,97,.5);
 }
 
 .row{
   margin-right: 0px !important;
   margin-left: 0px !important;
-  /* background-color: #4a4c4e !important; */
-  background-image: linear-gradient(to top, #3f4c66 0%, #1c2638 1%, #12397c 100%);
+  background-color: #10316b !important;
+  /* background-image: linear-gradient(to top, #3f4c66 0%, #1c2638 1%, #12397c 100%); */
   color: azure;
   height: 100vh;
 }
@@ -108,9 +257,13 @@
 }
 
 .fileInputGroup{
-  outline: 2px dashed azure;
+  outline: 1px dashed azure;
   outline-offset: 10px;
 }
+
+/* .input-group-text{
+  color: white;
+} */
 
 td,th{
   color: azure;
@@ -126,4 +279,10 @@ input[name="price"]{
 
 input[name="tax"]{
   inline-size: 2rem;
+  color: black;
+  text-align: center;
 }
+
+/* .money{
+  text-align: right;
+} */

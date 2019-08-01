@@ -9,10 +9,10 @@ export default class UserTable extends React.Component {
 
         const filterText = this.props.filterText;
 
-        const rounding = this.props.rounding;
+        // const rounding = this.props.rounding;
         // passed from App
 
-        const afterRoundingTotal = parseFloat((parseFloat(rounding.toFixed(2)) + parseFloat(parseFloat(userTotal).toFixed(2))).toFixed(2))
+        // const afterRoundingTotal = parseFloat((parseFloat(rounding.toFixed(2)) + parseFloat(parseFloat(userTotal).toFixed(2))).toFixed(2))
         const rows = [];
         let lastItem = null;
 
@@ -36,12 +36,12 @@ export default class UserTable extends React.Component {
 
         return (
       <div>
-        <h3>User/You</h3>
+        <h5>Your Split</h5>
         <table>
           <thead>
             <tr>
               <th>Item</th>
-              <th>Quantity</th>
+              <th>Qty</th>
               <th>Price</th>
               <th>Subtotal</th>
             </tr>
@@ -53,29 +53,36 @@ export default class UserTable extends React.Component {
               <td></td>
               {/* this should be total quanity - sum(other people's quantities) */}
               <td>Subtotal</td>
-              <td>{userSubtotal}</td>
+              <td className="money">{userSubtotal}</td>
             </tr>
             <tr>
               <td></td>
               <td></td>
               {/* this should be total quanity - sum(other people's quantities) */}
               <td>Tax (6%)</td>
-              <td>{userTax}</td>
+              <td className="money">{userTax}</td>
             </tr>
             <tr>
               <td></td>
               <td></td>
               {/* this should be total quanity - sum(other people's quantities) */}
+              <td>Total</td>
+              <td className="money">{userTotal}</td>
+            </tr>
+            {/* <tr>
+              <td></td>
+              <td></td>
+              this should be total quanity - sum(other people's quantities)
               <td>Rounding</td>
-              <td>{rounding}</td>
+              <td className="money">{rounding}</td>
             </tr>
             <tr>
               <td></td>
               <td></td>
-              {/* this should be total quanity - sum(other people's quantities) */}
+              this should be total quanity - sum(other people's quantities)
               <td>Total after Rounding</td>
-              <td>{afterRoundingTotal}</td>
-            </tr>
+              <td className="money">{afterRoundingTotal}</td>
+            </tr> */}
           </tbody>
         </table>
       </div>
