@@ -8,6 +8,10 @@ import axios from 'axios';
 import { Col, Row, Container } from 'reactstrap';
 import loading from './loadingcolorbar.gif';
 import EmailModal from './EmailModal';
+import { CSVLink } from "react-csv";
+
+
+
 /*
 Structure
 
@@ -21,6 +25,8 @@ App
   -User Table
     -User Row
 */
+
+// const csvData = [];
 
 // const numberStyle = {
 //   fontSize: 25,
@@ -76,6 +82,7 @@ class App extends React.Component {
 
     this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
   }
+  
   
   isFloat(n) {
     return n === +n && n !== (n|0);
@@ -337,12 +344,19 @@ class App extends React.Component {
 
     const items = this.state.items.map(item => ({
       ...item,
-      [valueType]: item.itemId === targetId ? newValue : item[valueType]
+      [valueType]: item.itemId === targetId ? (valueType === "quantity" || valueType === "price" ? parseFloat(newValue) : newValue) : item[valueType]
+
+      // [valueType]: item.itemId === targetId ? newValue : item[valueType]
+      // if item.itemID is equal to targetId, then valueType=newValue else valueType = item[valueType]
+
       // item.itemId === targetId ? (valueType === ("quantity" || "price") ? float(newValue) : newValue) : item[valueType]
       //  [valueType] will change the valuetype i pass in. e.g. if i pass in 'quantity', it will change the item[quantity] to the newvalue I passed in
       // condition ? value-if-true : value-if-false
+
+      //valueType === "quantity" || valueType === "price"  (quantity to int and price to float)
     }))
     this.setState({items : items}, ()=>this.refreshRemainder())
+    // also want it to update the user items and the person items
   }
 
   componentDidMount() {
@@ -352,9 +366,12 @@ class App extends React.Component {
     
     // adding user and having items set to a copy of items state
     let user = {
-      name: 'You/User',
+      name: 'User',
       userId: 0,
-      items: [...this.state.items]
+      items: [...this.state.items],
+      subtotal: 0,
+      tax: 0,
+      total: 0
     }
     // add user into user state here
     this.setState({
@@ -366,9 +383,12 @@ class App extends React.Component {
 
   componentDidUpdate() {
 
-    // console.log("data "+JSON.stringify(this.state.data))
+    // need to update the items for the user and every person, or do this update in the handleInput functoin
+    
+
+    console.log("data "+JSON.stringify(this.state.data))
     // console.log("persons "+JSON.stringify(this.state.persons))
-    // console.log("user.items " +JSON.stringify(this.state.user.items))
+    console.log("user.items " +JSON.stringify(this.state.user.items))
    
   }
 
@@ -529,6 +549,9 @@ class App extends React.Component {
               filterText ={filterText}
               rounding={this.state.rounding}
             />
+            {/* <button type="button" className="btn btn-success"onClick={csvData}>Download Data</button> */}
+            <CSVLink data={[...this.state.data]}>Download Data</CSVLink> 
+            {/* <a download="generatedBy_react-csv.csv" target="_self" href="blob:http://localhost:3000/c18b6189-b7df-4f81-954d-99482a42aa21">Download Data</a> */}
           </Col>
         </Row>
           {/* passing items to the following components as props */}
@@ -537,6 +560,8 @@ class App extends React.Component {
           toggleEmailModal={this.handleSendPersonEmail} 
           selectedPerson = {this.state.selectedPerson}
         />
+
+        
 
       </div>
     );

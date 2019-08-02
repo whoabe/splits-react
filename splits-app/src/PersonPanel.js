@@ -1,6 +1,6 @@
 import React from 'react';
 import ItemRow from './ItemRow'
-import { Button } from 'reactstrap'
+// import { Button } from 'reactstrap'
 
 
 export default class PersonPanel extends React.Component {
@@ -95,9 +95,9 @@ export default class PersonPanel extends React.Component {
                         
                     </tbody>
                 </table>
-                <button class = "delete-btn" onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
-                <div class="divider"/>
-                <button class = "email-btn" onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
+                <button className = "delete-btn" onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+                <div className="divider"/>
+                <button className = "email-btn" onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
             </div>
         )
     }
