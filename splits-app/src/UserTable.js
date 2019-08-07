@@ -3,13 +3,13 @@ import UserRow from './UserRow'
 
 export default class UserTable extends React.Component {
     render() {
-        // const userSubtotal = parseFloat(((this.props.remainingItems.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
-        // const userTax = parseFloat((userSubtotal * 0.06).toFixed(2));
-        // const userTotal = (userTax + userSubtotal).toFixed(2)
-        const userSubtotal = this.props.subtotal;
-        const userTax = this.props.tax;
-        const taxRate = this.props.taxRate;
-        const userTotal = this.props.total;
+        const taxRate = this.props.taxRate; 
+        const userSubtotal = parseFloat(((this.props.remainingItems.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
+        const userTax = parseFloat((userSubtotal * taxRate/100).toFixed(2));
+        const userTotal = (userTax + userSubtotal).toFixed(2)
+        // const userSubtotal = this.props.subtotal;
+        // const userTax = this.props.tax;
+        // const userTotal = this.props.total;
 
         const filterText = this.props.filterText;
 

@@ -6,8 +6,9 @@ import ItemRow from './ItemRow'
 export default class PersonPanel extends React.Component {
     render() {
 
+        const taxRate = this.props.taxRate;
         const personSubtotal = parseFloat(((this.props.person.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
-        const personTax = parseFloat((personSubtotal * 0.06).toFixed(2));
+        const personTax = parseFloat((personSubtotal * taxRate/100).toFixed(2));
         const personTotal = (personTax + personSubtotal).toFixed(2)
 
         
@@ -66,7 +67,7 @@ export default class PersonPanel extends React.Component {
                             <td></td>
                             <td></td>
                             {/* this should be total quanity - sum(other people's quantities) */}
-                            <td>Tax (6%)</td>
+                            <td>Tax ({taxRate}%)</td>
                             <td className="money">{personTax}</td>
                         </tr>
                       
