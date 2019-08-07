@@ -77,6 +77,7 @@ class App extends React.Component {
       displayWidth: 0,
       displayHeight: 0,
       loaded: 0,
+      taxRate: 0,
       // set remainingItems to the items list
     };
 
@@ -88,53 +89,78 @@ class App extends React.Component {
     return n === +n && n !== (n|0);
 }
 
-  roundingFunction = () => {
-    let rounding2 = this.state.rounding
-    // let subtotal2 = this.state.subtotal
-    // let subtotTotal = 0
+  // roundingFunction = () => {
+  //   let rounding2 = this.state.rounding
+  //   // let subtotal2 = this.state.subtotal
+  //   // let subtotTotal = 0
 
-    const subtotal2 = parseFloat(((this.state.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
-    // for (let i = 0; i < this.state.items.length; i++) {
-    //   // if (this.state.items[i].price && this.state.items[i].quantity)
-    //   const subtotal2 = 
+  //   const subtotal2 = parseFloat(((this.state.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
+  //   // for (let i = 0; i < this.state.items.length; i++) {
+  //   //   // if (this.state.items[i].price && this.state.items[i].quantity)
+  //   //   const subtotal2 = 
       
-    //   // (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
-    //   // parseFloat(string) returns an float
-    //   subtotTotal += subtotal2
+  //   //   // (parseFloat((this.state.items[i].quantity).toFixed(2))) * (parseFloat((this.state.items[i].price).toFixed(2)));
+  //   //   // parseFloat(string) returns an float
+  //   //   subtotTotal += subtotal2
 
-    // }
-    // console.log('subtotal ' + subtotal2)
-    let tax = parseFloat((subtotal2*0.06).toFixed(2));
+  //   // }
+  //   // console.log('subtotal ' + subtotal2)
+  //   let tax = parseFloat((subtotal2*this.state.taxRate/100).toFixed(2));
+  //   // debugger;
 
-    // console.log('tax ' + tax)
-    let total = tax + subtotal2;
-    // console.log('total ' + total)
+  //   console.log('tax ' + tax)
+  //   let total = tax + subtotal2;
+  //   // console.log('total ' + total)
 
-    let roundedTotal = Math.round(total*100/5) *5/100
+  //   let roundedTotal = Math.round(total*100/5) *5/100
   
-    /*
-    0.00 -> 0
-    0.01 -> 0 (-0.01)
-    0.02 -> 0 (-0.02)
-    0.03 -> 0.05 (+0.02)
-    0.04 -> 0.05 (+0.01)
-    0.05 -> 0.05 (0)
-    */
+  //   /*
+  //   0.00 -> 0
+  //   0.01 -> 0 (-0.01)
+  //   0.02 -> 0 (-0.02)
+  //   0.03 -> 0.05 (+0.02)
+  //   0.04 -> 0.05 (+0.01)
+  //   0.05 -> 0.05 (0)
+  //   */
 
-    // console.log('roundedTotal ' + roundedTotal)
-    rounding2 = parseFloat((roundedTotal-total).toFixed(2));
-    // console.log('rounding2 ' + rounding2)
-    this.setState({
-      rounding: rounding2, subtotal: subtotal2
+  //   // console.log('roundedTotal ' + roundedTotal)
+  //   rounding2 = parseFloat((roundedTotal-total).toFixed(2));
+  //   // console.log('rounding2 ' + rounding2)
+  //   this.setState({
+  //     rounding: rounding2, subtotal: subtotal2, tax: tax, total: total
     
+  //   })
+  // }
+  
+  calcs = () => {
+    const subtotal = parseFloat(((this.state.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
+
+    let tax = parseFloat((subtotal*this.state.taxRate/100).toFixed(2));
+
+    let total = tax + subtotal;
+
+    this.setState({
+      subtotal: subtotal,
+      tax: tax,
+      total: total
     })
   }
-  
 
   handleFilterTextChange(filterText) {
     this.setState({
       filterText: filterText
     });
+  }
+
+  handleTaxRate=(evt) => {
+    // debugger;
+    if (isNaN(evt)){
+      this.setState({taxRate: 0})
+    }
+    else{
+        evt = parseFloat(evt);
+        this.setState({taxRate: evt}, ()=> this.calcs())
+    }
   }
 
   handleAddPersonClick= () => {
@@ -196,9 +222,39 @@ class App extends React.Component {
 
   }
 
+  updatePersonItems = () => {
+    // update the item names for each person
+    // the item description and price have been updated, but they havent been updated in the this.state.persons.items.description
+    
+    let updatedItems = [...this.state.items]
+    // creates a copy of items
+    let updatedPersons = [...this.state.persons]
+    // creates a copy of persons
+    
+    // debugger;
+    for (let i= 0; i < updatedPersons.length; i++) {
+      // for every person
+      for (let j=0; j< updatedItems.length; j++) {
+        
+        updatedPersons[i].items[j].description = updatedItems[j].description; 
+        updatedPersons[i].items[j].price = updatedItems[j].price;
+        // = {
+        //   itemId: updatedItems[i].itemId,
+        //   description: updatedItems[i].description,
+        //   price: updatedItems[i].price,
+        //   quantity: updatedPersons[j].items[i]
+        // }
+        // debugger;
+      }
+    }
+    
+    
+    this.setState({persons: updatedPersons})
+    // debugger;
+  }
 
   refreshRemainder = () => {
-    // this function calculates remainingItems if it is called
+    // this function calculates remainingItems 
 
     // remainingItems is an array of the length of items, in this case, remainingItems = array[6]
     let remainingItems = [...this.state.remainingItems]
@@ -211,7 +267,7 @@ class App extends React.Component {
       let count = Number(this.state.items[i].quantity)
 
       for (let j = 0; j < this.state.persons.length; j++) {
-        console.log(this.state.persons[j].items[i])
+        // console.log(this.state.persons[j].items[i])
         // debugger;
         count -= this.state.persons[j].items[i].quantity
       }
@@ -226,9 +282,11 @@ class App extends React.Component {
     
     
     this.setState({remainingItems}, () => {
-      this.roundingFunction()
+      // this.roundingFunction()
       user.items = [...this.state.remainingItems]
       this.setState({ user })
+      this.updatePersonItems()
+      // this.setState({ data })
     });
 
 // want this.state.user.items to be equal to remainingItems
@@ -355,14 +413,14 @@ class App extends React.Component {
 
       //valueType === "quantity" || valueType === "price"  (quantity to int and price to float)
     }))
-    this.setState({items : items}, ()=>this.refreshRemainder())
+    this.setState({items : items}, ()=>this.refreshRemainder(), this.calcs())
     // also want it to update the user items and the person items
   }
 
   componentDidMount() {
     
     
-    this.roundingFunction()
+    // this.roundingFunction()
     
     // adding user and having items set to a copy of items state
     let user = {
@@ -386,9 +444,9 @@ class App extends React.Component {
     // need to update the items for the user and every person, or do this update in the handleInput functoin
     
 
-    console.log("data "+JSON.stringify(this.state.data))
+    // console.log("data "+JSON.stringify(this.state.data))
     // console.log("persons "+JSON.stringify(this.state.persons))
-    console.log("user.items " +JSON.stringify(this.state.user.items))
+    // console.log("user.items " +JSON.stringify(this.state.user.items))
    
   }
 
@@ -483,7 +541,7 @@ class App extends React.Component {
   render() {
     const { items, imageUrl, loaded, filterText, persons, remainingItems } = this.state
     const { onChangeHandler, onClickHandler, onImgLoad, imageCoordFinder, addRow, handleFilterTextChange, handleInput, handleAddPersonClick, handleDeletePerson, handleAddCount,
-      handleReduceCount } = this
+      handleReduceCount, handleTaxRate } = this
     return (
       <div>
         <Row>
@@ -523,7 +581,9 @@ class App extends React.Component {
               items={items} 
               filterText ={filterText}
               handleInput = {handleInput}
-              addRow = {addRow}/>
+              addRow = {addRow}
+              taxRate = {this.state.taxRate}
+              handleTaxRate = {handleTaxRate}/>
 
             {/* <Button onClick={handleAddPersonClick}>
               Add Person
@@ -548,6 +608,11 @@ class App extends React.Component {
               remainingItems={remainingItems} 
               filterText ={filterText}
               rounding={this.state.rounding}
+
+              subtotal = {this.state.subtotal}
+              tax = {this.state.tax}
+              total = {this.state.total}
+              taxRate = {this.state.taxRate}
             />
             {/* <button type="button" className="btn btn-success"onClick={csvData}>Download Data</button> */}
             <CSVLink data={[...this.state.data]}>Download Data</CSVLink> 

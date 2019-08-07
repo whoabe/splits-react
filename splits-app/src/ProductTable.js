@@ -2,35 +2,36 @@ import React from 'react'
 import { Table, InputGroup, InputGroupAddon } from 'reactstrap'
 
 export default class ProductTable extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            taxRate: 6,
-        };
-    }
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //         taxRate: 6,
+    //     };
+    // }
     round5= (x) => {
         return Math.ceil(x/5)*5;
     }
 
-    taxChange = (e) => {
-        if (isNaN(e.target.value)){
-            this.setState({taxRate: 0})
-        }
-        else{
-            this.setState({taxRate: e.target.value})
-        }
-    }
+    // taxChange = (e) => {
+    //     const taxRate = this.props.taxRate; 
+    //     if (isNaN(e.target.value)){
+    //         this.setState({taxRate: 0})
+    //     }
+    //     else{
+    //         // this.setState({taxRate: e.target.value})
+    //     }
+    // }
 
     render () {
 
     const productSubtotal = parseFloat(((this.props.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
-    const productTax = parseFloat((productSubtotal * this.state.taxRate/100).toFixed(2));
+    const productTax = parseFloat((productSubtotal * this.props.taxRate/100).toFixed(2));
     const productTotal = parseFloat((productTax + productSubtotal).toFixed(2));
     // const productRounding = this.props.rounding
     // const productRounding = parseFloat((this.round5(productTotal)-productTotal).toFixed(2));
     // const productAfterRounding = parseFloat((productTotal + productRounding).toFixed(2))
 
-    const {filterText, addRow, items, handleInput} = this.props;
+    const {filterText, addRow, items, handleInput, handleTaxRate} = this.props;
     return ( 
         <Table size="sm">
         <thead>
@@ -92,7 +93,10 @@ export default class ProductTable extends React.Component {
                 <td>
                     <InputGroup>
                         <InputGroupAddon addonType="prepend">Tax</InputGroupAddon>
-                        <input name="tax" value={this.state.taxRate} onChange={this.taxChange}/>
+                        <input 
+                            name="tax" 
+                            value={this.props.taxRate} 
+                            onChange={(evt) => handleTaxRate(evt.target.value)}/>
                         <InputGroupAddon addonType="append">%</InputGroupAddon>
                     </InputGroup>
                 </td>
