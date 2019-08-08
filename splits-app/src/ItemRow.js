@@ -13,7 +13,7 @@ export default class ItemRow extends React.Component {
                 <td>{item.description}</td>
 
                 {/* Quantity +/- buttons */}
-                <td>
+                <td className="quantityRow">
                     <Button className="spinnerButtons" onClick={() => this.props.onReduceCount(personId, item.itemId)}>-</Button>
 
                     <span className="px-1">{item.quantity}</span>

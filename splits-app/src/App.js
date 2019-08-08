@@ -601,6 +601,7 @@ class App extends React.Component {
                     onReduceCount={handleReduceCount}
                     onSendPersonEmail={this.handleSendPersonEmail}
                     taxRate={this.state.taxRate}
+                    filterText = {filterText}
                     /> ) }
             </div>
 

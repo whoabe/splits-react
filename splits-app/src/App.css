@@ -250,6 +250,7 @@ table, th, td {
   background-image: -ms-linear-gradient(top, #4caf50, #4caf50);
   background-image: -o-linear-gradient(top, #4caf50, #4caf50);
   background-image: linear-gradient(to bottom, #4caf50, #4caf50);
+  /* display: inline-block !important; */
 }
 
 .spinnerButtons:hover {
@@ -282,10 +283,6 @@ table, th, td {
   outline-offset: 10px;
 }
 
-/* .input-group-text{
-  color: white;
-} */
-
 td,th{
   color: azure;
 }
@@ -307,3 +304,25 @@ input[name="tax"]{
 /* .money{
   text-align: right;
 } */
+
+.quantityRow{
+  padding: 5px 5px;
+  width: 78px;
+  display: inline-block;
+}
+
+.input-group-text{
+  display: flex;
+  align-items: center;
+  padding: .375rem .75rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #ffffff !important;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #49924c !important;
+  border: 1px solid #000000 !important;
+  border-radius: .25rem;
+}

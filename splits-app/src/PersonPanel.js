@@ -16,15 +16,15 @@ export default class PersonPanel extends React.Component {
         // let totalPrice = 0
         // person.items.forEach(function(item){ totalPrice += (item.price*item.quantity) })
         
-        // const filterText = this.props.filterText;
+        const filterText = this.props.filterText;
 
         const rows = [];
         let lastItem = null;
 
         this.props.person.items.forEach((item) => {
-            // if (item.description.indexOf(filterText) === -1) {
-            //     return;
-            //     }
+            if (item.description.indexOf(filterText) === -1) {
+                return;
+                }
             // this filter isnt working
 
             if (item.description !== lastItem) {
