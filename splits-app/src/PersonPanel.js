@@ -96,9 +96,11 @@ export default class PersonPanel extends React.Component {
                         
                     </tbody>
                 </table>
-                <button className = "delete-btn" onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
-                <div className="divider"/>
-                <button className = "email-btn" onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button>
+                <div className="personButtons">
+                    <button className = "delete-btn" onClick={() => this.props.onDeletePerson(person.personId)}>Delete person</button>
+                    {/* <div className="divider"/> */}
+                    {/* <button className = "email-btn" onClick={() => this.props.onSendPersonEmail(person)}>Send Email</button> */}
+                </div>
             </div>
         )
     }

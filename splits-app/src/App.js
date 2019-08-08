@@ -8,7 +8,7 @@ import axios from 'axios';
 import { Col, Row, Container } from 'reactstrap';
 import loading from './loadingcolorbar.gif';
 import EmailModal from './EmailModal';
-import { CSVLink } from "react-csv";
+// import { CSVLink } from "react-csv";
 
 
 
@@ -78,6 +78,7 @@ class App extends React.Component {
       displayHeight: 0,
       loaded: 0,
       taxRate: 0,
+      // csvData: ["Name", "Items", "Subtotal", "Tax", "Total"],
       // set remainingItems to the items list
     };
 
@@ -132,6 +133,19 @@ class App extends React.Component {
   //   })
   // }
   
+  // handleCSV = () => {
+  //   // csvData: ["Name", "Items", "Subtotal", "Tax", "Total"],
+  //   var csvData = [...csvData];
+  //   var userList = ["User", "items", ]
+  //   csvData.push.apply(csvData, userList)
+
+  //   // want csvData to be equal to user if there is no other person
+  //   // once you add a person, then you need to add them into csvData
+  //   // +- items, deleting persons will change csvData
+  //   // handleinput will change csvData
+
+  // }
+
   calcs = () => {
     const subtotal = parseFloat(((this.state.items.map(item => item.quantity * item.price)).reduce((a, b) => a + b, 0)).toFixed(2));
 
@@ -588,9 +602,11 @@ class App extends React.Component {
             {/* <Button onClick={handleAddPersonClick}>
               Add Person
             </Button> */}
+            <h5>Other's Split</h5>
             <button type="button" className="btn btn-success"onClick={handleAddPersonClick}>Add Person</button>
 
             {/* creates the PersonPanel for each person */}
+
             <div className="personPanelHolder">
               { persons.map((person, index) => 
                   <PersonPanel 
@@ -617,7 +633,7 @@ class App extends React.Component {
               taxRate = {this.state.taxRate}
             />
             {/* <button type="button" className="btn btn-success"onClick={csvData}>Download Data</button> */}
-            <CSVLink data={[...this.state.data]}>Download Data</CSVLink> 
+            {/* <CSVLink data={[...this.state.data]}>Download Data</CSVLink>  */}
             {/* <a download="generatedBy_react-csv.csv" target="_self" href="blob:http://localhost:3000/c18b6189-b7df-4f81-954d-99482a42aa21">Download Data</a> */}
           </Col>
         </Row>

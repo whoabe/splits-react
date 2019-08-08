@@ -180,6 +180,7 @@ table, th, td {
   border-color: rgb(0, 0, 0) !important;
   /* margin-left: 0px; */
   margin-top: 5px;
+  /* display: inline; */
 
 }
 .delete-btn:hover {
@@ -220,6 +221,7 @@ table, th, td {
   border-color: rgb(0, 0, 0) !important;
   /* margin-right: -15px; */
   margin-top: 5px;
+  /* display: inline; */
 }
 .email-btn:hover {
   background: #218838;
@@ -326,3 +328,11 @@ input[name="tax"]{
   border: 1px solid #000000 !important;
   border-radius: .25rem;
 }
+
+.userTable{
+  margin-top: 1rem;
+}
+
+/* .personButtons{
+  display: inline-block;
+} */

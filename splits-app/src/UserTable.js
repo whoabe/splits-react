@@ -39,7 +39,7 @@ export default class UserTable extends React.Component {
 
 
         return (
-      <div>
+      <div className="userTable">
         <h5>Your Split</h5>
         <table>
           <thead>
