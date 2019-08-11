@@ -480,7 +480,8 @@ class App extends React.Component {
     this.setState({loaded:0.1})
     axios({
       method: 'POST',
-      url: 'http://localhost:5000/api/v1/detect/upload',
+      // url: 'http://localhost:5000/api/v1/detect/upload',
+      url: 'https://splits-flask.herokuapp.com/api/v1/detect/upload',
       data: data,
       headers: { 
         'content-type': 'multipart/form-data',
@@ -503,7 +504,8 @@ class App extends React.Component {
     yCoordinate = parseInt(yCoordinate*imageHeight/displayHeight)
     axios({
       method: 'POST',
-      url: `http://localhost:5000/api/v1/detect/${this.state.receiptId}`,
+      // url: `http://localhost:5000/api/v1/detect/${this.state.receiptId}`,
+      url: `https://splits-flask.herokuapp.com/api/v1/detect/${this.state.receiptId}`,
       data: `${xCoordinate}, ${yCoordinate}`,
       headers: { 
         'content-type': 'text/plain',
