@@ -9,7 +9,7 @@ import { Col, Row, Container } from 'reactstrap';
 import loading from './loadingcolorbar.gif';
 import EmailModal from './EmailModal';
 // import { CSVLink } from "react-csv";
-
+import AlertEx from './Alert';
 
 
 /*
@@ -562,6 +562,7 @@ class App extends React.Component {
       <div>
         <Row>
           <Col md="6" style={{'height': '100vh'}} className="receiptDisplay">
+            <AlertEx></AlertEx>
             {
               !imageUrl && loaded === 0
             ? 
